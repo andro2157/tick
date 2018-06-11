@@ -10,6 +10,24 @@
 #include <memory>
 #include "array.h"
 
+template <typename T>
+class SArray;
+
+template <typename T>
+class SArrayVec_ptr_comparator{
+ public:
+  static bool VFUNCTION(
+    const std::vector<std::shared_ptr<T>>& left,
+    const std::vector<std::shared_ptr<T>>& right) {
+    return std::equal(left.begin(), left.end(), right.begin(), FUNCTION);
+  };
+  static bool FUNCTION(
+    const std::shared_ptr<T>& left,
+    const std::shared_ptr<T>& right) {
+    return (*left == *right);
+  };
+};
+
 ///////////////////////////////////////////////////////////////////////////////////
 //
 //  SArray
@@ -34,6 +52,9 @@ class SArray : public Array<T> {
   using Array<T>::_data;
   using Array<T>::get_data_index;
   using Array<T>::set_data_index;
+
+ public:
+  using COMPARATOR = SArrayVec_ptr_comparator<SArray<T>>;
 
 #ifdef PYTHON_LINK
   //! @brief The (eventual) Python owner of the array _data;
@@ -317,6 +338,11 @@ std::shared_ptr<SArray<T>> Array<T>::as_sarray_ptr() {
 /**
  * @}
  */
+#define VEC_PTR_CMP(TYPE)                          \
+template class SArrayVec_ptr_comparator<SArray<TYPE>>
+#if defined(__APPLE__) || defined(_WIN32)
+VEC_PTR_CMP(unsigned long);
+#endif
 
 #define SARRAY_DEFINE_TYPE(TYPE, NAME)\
   typedef SArray<TYPE> SArray##NAME; \
