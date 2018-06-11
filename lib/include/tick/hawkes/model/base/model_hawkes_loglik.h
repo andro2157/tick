@@ -102,6 +102,14 @@ class DLL_PUBLIC ModelHawkesLogLik : public ModelHawkesList {
 
   ulong get_n_coeffs() const override;
 
+  template <class Archive>
+  void serialize(Archive &ar) {
+    ar(cereal::make_nvp("ModelHawkesList",
+                        cereal::base_class<ModelHawkesList>(this)));
+
+    ar(CEREAL_NVP(model_list));
+  }
+
  protected:
   virtual std::unique_ptr<ModelHawkesLogLikSingle> build_model(
       const int n_threads) {

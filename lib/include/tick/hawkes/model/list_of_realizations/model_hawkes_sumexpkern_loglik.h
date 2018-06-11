@@ -52,6 +52,14 @@ class DLL_PUBLIC ModelHawkesSumExpKernLogLik : public ModelHawkesLogLik {
   }
 
   ulong get_n_coeffs() const override;
+
+  template <class Archive>
+  void serialize(Archive &ar) {
+    ar(cereal::make_nvp("ModelHawkesLogLik",
+                        cereal::base_class<ModelHawkesLogLik>(this)));
+
+    ar(CEREAL_NVP(decays));
+  }
 };
 
 #endif  // LIB_INCLUDE_TICK_HAWKES_MODEL_LIST_OF_REALIZATIONS_MODEL_HAWKES_SUMEXPKERN_LOGLIK_H_

@@ -213,6 +213,16 @@ class DLL_PUBLIC ModelHawkesLogLikSingle : public ModelHawkesSingle {
   inline ulong get_rand_max() const { return n_total_jumps; }
 
   friend ModelHawkesLogLik;
+
+  template <class Archive>
+  void serialize(Archive &ar) {
+    ar(cereal::make_nvp("ModelHawkesSingle",
+                        cereal::base_class<ModelHawkesSingle>(this)));
+
+    ar(CEREAL_NVP(g));
+    ar(CEREAL_NVP(G));
+    ar(CEREAL_NVP(sum_G));
+  }
 };
 
 #endif  // LIB_INCLUDE_TICK_HAWKES_MODEL_BASE_MODEL_HAWKES_LOGLIK_SINGLE_H_

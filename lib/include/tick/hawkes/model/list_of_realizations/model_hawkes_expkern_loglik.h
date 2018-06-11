@@ -44,6 +44,14 @@ class DLL_PUBLIC ModelHawkesExpKernLogLik : public ModelHawkesLogLik {
   }
 
   ulong get_n_coeffs() const override;
+
+  template <class Archive>
+  void serialize(Archive &ar) {
+    ar(cereal::make_nvp("ModelHawkesLogLik",
+                        cereal::base_class<ModelHawkesLogLik>(this)));
+
+    ar(CEREAL_NVP(decay));
+  }
 };
 
 #endif  // LIB_INCLUDE_TICK_HAWKES_MODEL_LIST_OF_REALIZATIONS_MODEL_HAWKES_EXPKERN_LOGLIK_H_

@@ -81,6 +81,14 @@ class DLL_PUBLIC ModelHawkesExpKernLogLikSingle
   }
 
   friend ModelHawkesExpKernLogLik;
+
+  template <class Archive>
+  void serialize(Archive &ar) {
+    ar(cereal::make_nvp("ModelHawkesLogLikSingle",
+                        cereal::base_class<ModelHawkesLogLikSingle>(this)));
+
+    ar(CEREAL_NVP(decay));
+  }
 };
 
 #endif  // LIB_INCLUDE_TICK_HAWKES_MODEL_MODEL_HAWKES_EXPKERN_LOGLIK_SINGLE_H_

@@ -84,6 +84,14 @@ class DLL_PUBLIC ModelHawkesSumExpKernLogLikSingle
   ulong get_n_decays() const { return decays.size(); }
 
   friend ModelHawkesSumExpKernLogLik;
+
+  template <class Archive>
+  void serialize(Archive &ar) {
+    ar(cereal::make_nvp("ModelHawkesLogLikSingle",
+                        cereal::base_class<ModelHawkesLogLikSingle>(this)));
+
+    ar(CEREAL_NVP(decays));
+  }
 };
 
 #endif  // LIB_INCLUDE_TICK_HAWKES_MODEL_MODEL_HAWKES_SUMEXPKERN_LOGLIK_SINGLE_H_
