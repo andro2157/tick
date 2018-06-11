@@ -169,4 +169,7 @@ class DLL_PUBLIC ModelHawkesLogLik : public ModelHawkesList {
   std::pair<ulong, ulong> sampled_i_to_realization(const ulong sampled_i);
 };
 
+CEREAL_SPECIALIZE_FOR_ALL_ARCHIVES(ModelHawkesLogLik,
+                                   cereal::specialization::member_serialize)
+
 #endif  // LIB_INCLUDE_TICK_HAWKES_MODEL_BASE_MODEL_HAWKES_LOGLIK_H_

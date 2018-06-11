@@ -62,4 +62,7 @@ class DLL_PUBLIC ModelHawkesSumExpKernLogLik : public ModelHawkesLogLik {
   }
 };
 
+CEREAL_SPECIALIZE_FOR_ALL_ARCHIVES(ModelHawkesSumExpKernLogLik,
+                                   cereal::specialization::member_serialize)
+
 #endif  // LIB_INCLUDE_TICK_HAWKES_MODEL_LIST_OF_REALIZATIONS_MODEL_HAWKES_SUMEXPKERN_LOGLIK_H_
