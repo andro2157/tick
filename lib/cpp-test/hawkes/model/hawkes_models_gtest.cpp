@@ -23,6 +23,8 @@
 #include "tick/hawkes/model/list_of_realizations/model_hawkes_sumexpkern_leastsq.h"
 #include "tick/hawkes/model/list_of_realizations/model_hawkes_sumexpkern_loglik.h"
 
+
+
 class HawkesModelTest : public ::testing::Test {
  protected:
   SArrayDoublePtrList1D timestamps;
@@ -36,6 +38,215 @@ class HawkesModelTest : public ::testing::Test {
     timestamps.push_back(timestamps_1.as_sarray_ptr());
   }
 };
+
+TEST_F(HawkesModelTest, hawkes_loglik_serialization) {
+  ModelHawkesLogLik model;
+
+  auto timestamps_list = SArrayDoublePtrList2D(0);
+  timestamps_list.push_back(timestamps);
+  timestamps_list.push_back(timestamps);
+
+  auto end_times = VArrayDouble::new_ptr(2);
+  (*end_times)[0] = 5.65;
+  (*end_times)[1] = 5.87;
+
+  model.set_data(timestamps_list, end_times);
+
+  std::stringstream os;
+  {
+    cereal::BinaryOutputArchive outputArchive(os);
+
+    outputArchive(model);
+  }
+
+  {
+    cereal::BinaryInputArchive inputArchive(os);
+
+    ModelHawkesLogLik restored_model(0);
+    inputArchive(restored_model);
+
+    EXPECT_EQ(restored_model.get_n_nodes(), 2);
+    EXPECT_EQ((*restored_model.get_end_times())[1], 5.87);
+    EXPECT_EQ(restored_model.get_n_total_jumps(), model.get_n_total_jumps());
+
+    ASSERT_TRUE(model == restored_model);
+  }
+}
+
+TEST_F(HawkesModelTest, hawkes_loglik_single_serialization) {
+  ModelHawkesLogLikSingle model;
+  model.set_data(timestamps, 5.65);
+
+  std::stringstream os;
+  {
+    cereal::JSONOutputArchive outputArchive(os);
+
+    outputArchive(model);
+  }
+
+  {
+    cereal::JSONInputArchive inputArchive(os);
+
+    ModelHawkesLogLikSingle restored_model;
+    inputArchive(restored_model);
+
+    EXPECT_EQ(restored_model.get_n_nodes(), 2);
+    EXPECT_EQ(restored_model.get_end_time(), 5.65);
+    EXPECT_EQ(restored_model.get_n_total_jumps(), model.get_n_total_jumps());
+
+    ASSERT_TRUE(model == restored_model);
+  }
+}
+
+TEST_F(HawkesModelTest, hawkes_sum_exp_loglik_serialization) {
+  ArrayDouble decays{2., 3.};
+
+  ModelHawkesSumExpKernLogLik model(decays, 2);
+
+  auto timestamps_list = SArrayDoublePtrList2D(0);
+  timestamps_list.push_back(timestamps);
+  timestamps_list.push_back(timestamps);
+
+  auto end_times = VArrayDouble::new_ptr(2);
+  (*end_times)[0] = 5.65;
+  (*end_times)[1] = 5.87;
+
+  model.set_data(timestamps_list, end_times);
+  model.compute_weights();
+
+  ArrayDouble coeffs =
+      ArrayDouble{1., 3., 0., 1., 1., 3., 2., 3., 4., 1., 5., 3., 2., 4.};
+
+  std::stringstream os;
+  {
+
+    cereal::BinaryOutputArchive outputArchive(os);
+
+    outputArchive(model);
+  }
+
+  {
+    cereal::BinaryInputArchive inputArchive(os);
+
+    ModelHawkesSumExpKernLogLik restored_model(ArrayDouble(), 0);
+    inputArchive(restored_model);
+
+    EXPECT_EQ(restored_model.get_n_nodes(), 2);
+    EXPECT_EQ((*restored_model.get_end_times())[1], 5.87);
+    EXPECT_EQ(restored_model.get_n_total_jumps(), model.get_n_total_jumps());
+
+    EXPECT_DOUBLE_EQ(restored_model.loss(coeffs), model.loss(coeffs));
+
+    ASSERT_TRUE(model == restored_model);
+  }
+}
+
+TEST_F(HawkesModelTest, hawkes_exp_loglik_serialization) {
+  double decay = 2.;
+
+  ModelHawkesExpKernLogLik model(decay, 2);
+
+  auto timestamps_list = SArrayDoublePtrList2D(0);
+  timestamps_list.push_back(timestamps);
+  timestamps_list.push_back(timestamps);
+
+  auto end_times = VArrayDouble::new_ptr(2);
+  (*end_times)[0] = 5.65;
+  (*end_times)[1] = 5.87;
+
+  model.set_data(timestamps_list, end_times);
+  model.compute_weights();
+
+  ArrayDouble coeffs = ArrayDouble{1., 3., 2., 3., 4., 1};
+
+  std::stringstream os;
+  {
+    cereal::BinaryOutputArchive outputArchive(os);
+
+    outputArchive(model);
+  }
+
+  {
+    cereal::BinaryInputArchive inputArchive(os);
+
+    ModelHawkesExpKernLogLik restored_model(0, 0);
+    inputArchive(restored_model);
+
+    EXPECT_EQ(restored_model.get_n_nodes(), 2);
+    EXPECT_EQ((*restored_model.get_end_times())[1], 5.87);
+    EXPECT_EQ(restored_model.get_n_total_jumps(), model.get_n_total_jumps());
+
+    EXPECT_DOUBLE_EQ(restored_model.loss(coeffs), model.loss(coeffs));
+
+    ASSERT_TRUE(model == restored_model);
+  }
+}
+
+TEST_F(HawkesModelTest, hawkes_exp_loglik_single_serialization) {
+  double decay  = 2.;
+
+  ModelHawkesExpKernLogLikSingle model(decay);
+  model.set_data(timestamps, 5.65);
+  model.compute_weights();
+
+  ArrayDouble coeffs =
+      ArrayDouble{1., 3., 0., 1., 1., 3., 2., 3., 4., 1., 5., 3., 2., 4.};
+
+  std::stringstream os;
+  {
+    cereal::JSONOutputArchive outputArchive(os);
+
+    outputArchive(model);
+  }
+
+  {
+    cereal::JSONInputArchive inputArchive(os);
+
+    ModelHawkesExpKernLogLikSingle restored_model;
+    inputArchive(restored_model);
+
+    EXPECT_EQ(restored_model.get_n_nodes(), 2);
+    EXPECT_EQ(restored_model.get_end_time(), 5.65);
+    EXPECT_EQ(restored_model.get_n_total_jumps(), model.get_n_total_jumps());
+
+    EXPECT_DOUBLE_EQ(restored_model.loss(coeffs), model.loss(coeffs));
+
+    ASSERT_TRUE(model == restored_model);
+  }
+}
+
+TEST_F(HawkesModelTest, hawkes_sum_exp_loglik_single_serialization) {
+  ArrayDouble decays{2., 3.};
+
+  ModelHawkesSumExpKernLogLikSingle model(decays);
+  model.set_data(timestamps, 5.65);
+  model.compute_weights();
+
+  ArrayDouble coeffs =
+      ArrayDouble{1., 3., 0., 1., 1., 3., 2., 3., 4., 1., 5., 3., 2., 4.};
+
+  std::stringstream os;
+  {
+    cereal::JSONOutputArchive outputArchive(os);
+
+    outputArchive(model);
+  }
+
+  {
+    cereal::JSONInputArchive inputArchive(os);
+
+    ModelHawkesSumExpKernLogLikSingle restored_model;
+    inputArchive(restored_model);
+
+    EXPECT_EQ(restored_model.get_n_nodes(), 2);
+    EXPECT_EQ(restored_model.get_end_time(), 5.65);
+    EXPECT_EQ(restored_model.get_n_total_jumps(), model.get_n_total_jumps());
+
+    EXPECT_DOUBLE_EQ(restored_model.loss(coeffs), model.loss(coeffs));
+
+    ASSERT_TRUE(model == restored_model);
+  }
+}
 
 TEST_F(HawkesModelTest, compute_weights_loglikelihood) {
   ModelHawkesExpKernLogLikSingle model(2);
@@ -172,6 +383,8 @@ TEST_F(HawkesModelTest, hawkes_least_squares_serialization) {
     EXPECT_EQ(restored_model.get_n_total_jumps(), model.get_n_total_jumps());
 
     EXPECT_DOUBLE_EQ(restored_model.loss(coeffs), model.loss(coeffs));
+
+    ASSERT_TRUE(model == restored_model);
   }
 }
 
@@ -242,6 +455,8 @@ TEST_F(HawkesModelTest, hawkes_least_squares_sum_exp_serialization) {
     EXPECT_EQ(restored_model.get_n_total_jumps(), model.get_n_total_jumps());
 
     EXPECT_DOUBLE_EQ(restored_model.loss(coeffs), model.loss(coeffs));
+
+    ASSERT_TRUE(model == restored_model);
   }
 }
 
@@ -309,6 +524,8 @@ TEST_F(HawkesModelTest, least_square_list_serialization) {
     EXPECT_EQ(restored_model.get_n_total_jumps(), model.get_n_total_jumps());
 
     EXPECT_DOUBLE_EQ(restored_model.loss(coeffs), model.loss(coeffs));
+
+    ASSERT_TRUE(model == restored_model);
   }
 }
 
@@ -380,6 +597,8 @@ TEST_F(HawkesModelTest, hawkes_least_squares_sum_exp_list_serialization) {
     EXPECT_EQ(restored_model.get_n_total_jumps(), model.get_n_total_jumps());
 
     EXPECT_DOUBLE_EQ(restored_model.loss(coeffs), model.loss(coeffs));
+
+    ASSERT_TRUE(model == restored_model);
   }
 }
 

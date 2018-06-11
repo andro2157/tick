@@ -341,7 +341,8 @@ std::shared_ptr<SArray2d<T>> Array2d<T>::as_sarray2d_ptr() {
   typedef SArray2d<TYPE> SArray##NAME##2d;                            \
   typedef std::shared_ptr<SArray##NAME##2d> SArray##NAME##2dPtr;      \
   typedef std::vector<SArray##NAME##2dPtr> SArray##NAME##2dPtrList1D; \
-  typedef std::vector<SArray##NAME##2dPtrList1D> SArray##NAME##2dPtrList2D
+  typedef std::vector<SArray##NAME##2dPtrList1D> SArray##NAME##2dPtrList2D; \
+  VEC_PTR_CMP(TYPE);
 
 SARRAY2D_DEFINE_TYPE(double, Double);
 SARRAY2D_DEFINE_TYPE(float, Float);
@@ -355,6 +356,7 @@ SARRAY2D_DEFINE_TYPE(std::atomic<double>, AtomicDouble);
 SARRAY2D_DEFINE_TYPE(std::atomic<float>, AtomicFloat);
 
 #undef SARRAY2D_DEFINE_TYPE
+#undef VEC_PTR_CMP
 
 #define INSTANTIATE_SARRAY2D(SARRAY_TYPE, C_TYPE)              \
   template std::ostream &operator<<<C_TYPE>(std::ostream &Str, \
