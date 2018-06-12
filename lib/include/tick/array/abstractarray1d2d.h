@@ -70,7 +70,7 @@ NonAtomicOuterType(unsigned long);
 template <typename T>
 class AbstractArray1d2d {
   template <class T1>
-  friend std::ostream &operator<<(std::ostream &, const AbstractArray1d2d<T> &);
+  friend std::ostream &operator<<(std::ostream &, const AbstractArray1d2d<T1> &);
  protected:
   //! @brief inner type used for most outputs.
   //! Basic usage: `AbstractArray1d2d<std::atomic<double>>::K` is `double`

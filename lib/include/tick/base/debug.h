@@ -70,7 +70,7 @@
     if (!are_equal)                                                    \
       ss << #var ": " << this->var << " != " << that.var << std::endl; \
     return are_equal;                                                  \
-  }()\
+  }()
 /** TICK_CMP_REPORT_PTR
  * This is the same as the above macro expect it includes a dereference for
  *  pointers or std::shared_ptr etc - null checks are included
@@ -87,7 +87,7 @@
         ss << #var ":are not equals" << std::endl;                        \
     }                                                                     \
     return are_equal;                                                     \
-  }()\
+  }()
 namespace tick {
 
 /**

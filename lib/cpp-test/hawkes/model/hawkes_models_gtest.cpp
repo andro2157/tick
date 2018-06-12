@@ -172,6 +172,8 @@ TEST_F(HawkesModelTest, hawkes_least_squares_serialization) {
     EXPECT_EQ(restored_model.get_n_total_jumps(), model.get_n_total_jumps());
 
     EXPECT_DOUBLE_EQ(restored_model.loss(coeffs), model.loss(coeffs));
+
+    ASSERT_TRUE(model == restored_model);
   }
 }
 
@@ -242,6 +244,8 @@ TEST_F(HawkesModelTest, hawkes_least_squares_sum_exp_serialization) {
     EXPECT_EQ(restored_model.get_n_total_jumps(), model.get_n_total_jumps());
 
     EXPECT_DOUBLE_EQ(restored_model.loss(coeffs), model.loss(coeffs));
+
+    ASSERT_TRUE(model == restored_model);
   }
 }
 
@@ -309,6 +313,8 @@ TEST_F(HawkesModelTest, least_square_list_serialization) {
     EXPECT_EQ(restored_model.get_n_total_jumps(), model.get_n_total_jumps());
 
     EXPECT_DOUBLE_EQ(restored_model.loss(coeffs), model.loss(coeffs));
+
+    ASSERT_TRUE(model == restored_model);
   }
 }
 
@@ -380,6 +386,8 @@ TEST_F(HawkesModelTest, hawkes_least_squares_sum_exp_list_serialization) {
     EXPECT_EQ(restored_model.get_n_total_jumps(), model.get_n_total_jumps());
 
     EXPECT_DOUBLE_EQ(restored_model.loss(coeffs), model.loss(coeffs));
+
+    ASSERT_TRUE(model == restored_model);
   }
 }
 
