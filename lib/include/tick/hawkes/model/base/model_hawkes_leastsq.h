@@ -92,7 +92,7 @@ class DLL_PUBLIC ModelHawkesLeastSq : public ModelHawkesList {
     auto are_equal = ModelHawkesList::compare(that, ss) &&
                      TICK_CMP_REPORT(ss, weights_allocated) &&
                      //aggregated_model == that.aggregated_model;
-                     TICK_CMP_REPORT_PTR(ss, aggregated_model);
+                     TICK_CMP_REPORT_PTR(ss, aggregated_model.get());
     return BoolStrReport(are_equal, ss.str());
   }
   BoolStrReport compare(const ModelHawkesLeastSq &that) {

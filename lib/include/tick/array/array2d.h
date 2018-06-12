@@ -34,7 +34,6 @@ class SparseArray2d;
  */
 template <typename T>
 class Array2d : public BaseArray2d<T> {
-  friend std::ostream &operator<<(std::ostream &, const std::vector<T> &);
  protected:
   using BaseArray2d<T>::_size;
   using BaseArray2d<T>::is_data_allocation_owned;
@@ -197,7 +196,7 @@ public:
 
   bool compare(const Array2d<T>& that)
   {
-    bool are_equal = BaseArray2d::compare(that);
+    bool are_equal = BaseArray2d<T>::compare(that);
     return are_equal;
   }
 

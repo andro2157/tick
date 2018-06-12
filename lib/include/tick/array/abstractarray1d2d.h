@@ -11,10 +11,11 @@
 
 // License: BSD 3 clause
 
-#include <cstring>
 #include <atomic>
-#include <algorithm>
+#include <cstring>
+#include <iostream>
 #include <typeinfo>
+#include <algorithm>
 #include <type_traits>
 
 #include "promote.h"
@@ -68,6 +69,7 @@ NonAtomicOuterType(unsigned long);
  */
 template <typename T>
 class AbstractArray1d2d {
+  template <class T1>
   friend std::ostream &operator<<(std::ostream &, const AbstractArray1d2d<T> &);
  protected:
   //! @brief inner type used for most outputs.
