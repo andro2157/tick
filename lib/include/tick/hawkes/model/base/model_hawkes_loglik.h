@@ -110,6 +110,20 @@ class DLL_PUBLIC ModelHawkesLogLik : public ModelHawkesList {
     ar(CEREAL_NVP(model_list));
   }
 
+  BoolStrReport compare(const ModelHawkesLogLik &that, std::stringstream &ss) {
+    ss << get_class_name() << std::endl;
+    auto are_equal = ModelHawkesList::compare(that, ss) &&
+                     TICK_CMP_REPORT_VECTOR(ss, model_list);
+    return BoolStrReport(are_equal, ss.str());
+  }
+  BoolStrReport compare(const ModelHawkesLogLik &that) {
+    std::stringstream ss;
+    return compare(that, ss);
+  }
+  BoolStrReport operator==(const ModelHawkesLogLik &that) {
+    return ModelHawkesLogLik::compare(that);
+  }
+
  protected:
   virtual std::unique_ptr<ModelHawkesLogLikSingle> build_model(
       const int n_threads) {

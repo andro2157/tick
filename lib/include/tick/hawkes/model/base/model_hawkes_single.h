@@ -49,6 +49,24 @@ class DLL_PUBLIC ModelHawkesSingle : public ModelHawkes {
     ar(CEREAL_NVP(end_time));
     ar(CEREAL_NVP(n_total_jumps));
   }
+
+  BoolStrReport compare(const ModelHawkesSingle &that, std::stringstream &ss) {
+    ss << get_class_name() << std::endl;
+    auto are_equal = ModelHawkes::compare(that, ss) &&
+                     TICK_CMP_REPORT(ss, max_n_threads) &&
+                     TICK_CMP_REPORT(ss, optimization_level) &&
+                     TICK_CMP_REPORT(ss, weights_computed) &&
+                     TICK_CMP_REPORT(ss, n_nodes) &&
+                     TICK_CMP_REPORT(ss, n_jumps_per_node);
+    return BoolStrReport(are_equal, ss.str());
+  }
+  BoolStrReport compare(const ModelHawkesSingle &that) {
+    std::stringstream ss;
+    return compare(that, ss);
+  }
+  BoolStrReport operator==(const ModelHawkesSingle &that) {
+    return ModelHawkesSingle::compare(that);
+  }
 };
 
 CEREAL_REGISTER_TYPE(ModelHawkesSingle);

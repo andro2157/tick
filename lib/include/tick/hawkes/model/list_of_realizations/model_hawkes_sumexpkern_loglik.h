@@ -60,6 +60,20 @@ class DLL_PUBLIC ModelHawkesSumExpKernLogLik : public ModelHawkesLogLik {
 
     ar(CEREAL_NVP(decays));
   }
+  
+  BoolStrReport compare(const ModelHawkesSumExpKernLogLik &that, std::stringstream &ss) {
+    ss << get_class_name() << std::endl;
+    auto are_equal = ModelHawkesLogLik::compare(that, ss) &&
+                     TICK_CMP_REPORT(ss, decays);
+    return BoolStrReport(are_equal, ss.str());
+  }
+  BoolStrReport compare(const ModelHawkesSumExpKernLogLik &that) {
+    std::stringstream ss;
+    return compare(that, ss);
+  }
+  BoolStrReport operator==(const ModelHawkesSumExpKernLogLik &that) {
+    return ModelHawkesSumExpKernLogLik::compare(that);
+  }
 };
 
 CEREAL_SPECIALIZE_FOR_ALL_ARCHIVES(ModelHawkesSumExpKernLogLik,

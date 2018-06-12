@@ -68,6 +68,7 @@ NonAtomicOuterType(unsigned long);
  */
 template <typename T>
 class AbstractArray1d2d {
+  friend std::ostream &operator<<(std::ostream &, const AbstractArray1d2d<T> &);
  protected:
   //! @brief inner type used for most outputs.
   //! Basic usage: `AbstractArray1d2d<std::atomic<double>>::K` is `double`
@@ -529,5 +530,9 @@ AbstractArray1d2d<T>::get_data_index(size_t index) const {
   return _data[index];
 }
 
+template <typename T>
+inline std::ostream &operator<<(std::ostream &s, const AbstractArray1d2d<T> &p) {
+  return s << typeid(p).name() << "<" << typeid(T).name() << ">";
+}
 
 #endif  // LIB_INCLUDE_TICK_ARRAY_ABSTRACTARRAY1D2D_H_

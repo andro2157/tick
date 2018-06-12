@@ -62,6 +62,15 @@
       ss << #var ": " << this->var << " != " << that.var << std::endl; \
     return are_equal;                                                  \
   }()
+#define TICK_CMP_REPORT_VECTOR(ss, var)                                       \
+  [&]() {                                                              \
+    bool is_size_eq = this->var.size() == that.var.size();\
+    bool are_equal = (is_size_eq &&\
+                    std::equal(this->var.begin(), this->var.end(), that.var.begin()));\
+    if (!are_equal)                                                    \
+      ss << #var ": " << this->var << " != " << that.var << std::endl; \
+    return are_equal;                                                  \
+  }()\
 /** TICK_CMP_REPORT_PTR
  * This is the same as the above macro expect it includes a dereference for
  *  pointers or std::shared_ptr etc - null checks are included
@@ -70,6 +79,19 @@
   [&]() {                                                                 \
     bool is_not_null_eq = (this->var != nullptr && that.var != nullptr);  \
     bool are_equal = (is_not_null_eq && (*this->var) == (*that.var)) ||   \
+                     (this->var == nullptr && that.var == nullptr);       \
+    if (!are_equal) {                                                     \
+      if (is_not_null_eq)                                                 \
+        ss << #var " : " << this->var << " != " << that.var << std::endl; \
+      else                                                                \
+        ss << #var ":are not equals" << std::endl;                        \
+    }                                                                     \
+    return are_equal;                                                     \
+  }()
+#define TICK_CMP_REPORT_PTR2(ss, var)                                     \
+  [&]() {                                                                 \
+    bool is_not_null_eq = (this->var != nullptr && that.var != nullptr);  \
+    bool are_equal = (is_not_null_eq && (this->var) == (that.var)) ||     \
                      (this->var == nullptr && that.var == nullptr);       \
     if (!are_equal) {                                                     \
       if (is_not_null_eq)                                                 \
