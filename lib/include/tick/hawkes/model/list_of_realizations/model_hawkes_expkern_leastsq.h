@@ -20,7 +20,7 @@ class DLL_PUBLIC ModelHawkesExpKernLeastSq : public ModelHawkesLeastSq {
 
   //! @brief The 2d array of decays (remember that the decays are fixed!)
   SArrayDouble2dPtr decays;
-  
+
  public:
   //! @brief Empty constructor
   //! This constructor should only be used for serialization

@@ -15,7 +15,7 @@ class SArray;
 
 template <typename T>
 class SArrayVec_ptr_comparator{
-public:
+ public:
   static bool VFUNCTION(
     const std::vector<std::shared_ptr<T>>& left,
     const std::vector<std::shared_ptr<T>>& right) {
@@ -52,7 +52,8 @@ class SArray : public Array<T> {
   using Array<T>::_data;
   using Array<T>::get_data_index;
   using Array<T>::set_data_index;
-public:
+
+ public:
   using COMPARATOR = SArrayVec_ptr_comparator<SArray<T>>;
 
 #ifdef PYTHON_LINK

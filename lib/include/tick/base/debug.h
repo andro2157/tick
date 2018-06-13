@@ -91,7 +91,6 @@
     return are_equal; \
   }()
 
-    
 /** TICK_CMP_REPORT_PTR
  * This is the same as the above macro expect it includes a dereference for
  *  pointers or std::shared_ptr etc - null checks are included

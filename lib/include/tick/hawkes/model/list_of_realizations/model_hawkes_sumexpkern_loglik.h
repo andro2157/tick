@@ -60,7 +60,7 @@ class DLL_PUBLIC ModelHawkesSumExpKernLogLik : public ModelHawkesLogLik {
 
     ar(CEREAL_NVP(decays));
   }
-  
+
   BoolStrReport compare(const ModelHawkesSumExpKernLogLik &that, std::stringstream &ss) {
     ss << get_class_name() << std::endl;
     auto are_equal = ModelHawkesLogLik::compare(that, ss) &&

@@ -192,16 +192,13 @@ class Array2d : public BaseArray2d<T> {
   // The definition is in the file sarray.h
   std::shared_ptr<SArray2d<T>> as_sarray2d_ptr();
 
-public:
-
-  bool compare(const Array2d<T>& that)
-  {
+ public:
+  bool compare(const Array2d<T>& that) {
     bool are_equal = BaseArray2d<T>::compare(that);
     return are_equal;
   }
 
-  bool operator==(const Array2d<T>& that)
-  {
+  bool operator==(const Array2d<T>& that) {
     return compare(that);
   }
 };
