@@ -135,7 +135,7 @@ class DLL_PUBLIC ModelHawkesExpKernLeastSqSingle : public ModelHawkesSingle {
                      TICK_CMP_REPORT(ss, Dg) &&
                      TICK_CMP_REPORT(ss, Dg2) &&
                      TICK_CMP_REPORT(ss, C) &&
-                     TICK_CMP_REPORT(ss, decays);
+                     TICK_CMP_REPORT_PTR(ss, decays);
     return BoolStrReport(are_equal, ss.str());
   }
   BoolStrReport compare(const ModelHawkesExpKernLeastSqSingle &that) {

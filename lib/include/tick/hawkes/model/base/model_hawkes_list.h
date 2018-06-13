@@ -64,9 +64,9 @@ class DLL_PUBLIC ModelHawkesList : public ModelHawkes {
     ss << get_class_name() << std::endl;
     auto are_equal = ModelHawkes::compare(that, ss) &&
                      TICK_CMP_REPORT(ss, n_realizations) &&
-                     TICK_CMP_REPORT_VECTOR(ss, timestamps_list) &&
-                     TICK_CMP_REPORT(ss, end_times) &&
-                     TICK_CMP_REPORT(ss, n_jumps_per_realization);
+                     TICK_CMP_REPORT_VECTOR_SPTR_2D(ss, timestamps_list, double) &&
+                     TICK_CMP_REPORT_PTR(ss, end_times) &&
+                     TICK_CMP_REPORT_PTR(ss, n_jumps_per_realization);
     return BoolStrReport(are_equal, ss.str());
   }
   BoolStrReport compare(const ModelHawkesList &that) {

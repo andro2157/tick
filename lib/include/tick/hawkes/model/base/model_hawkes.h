@@ -74,8 +74,8 @@ class DLL_PUBLIC ModelHawkes : public Model {
                      TICK_CMP_REPORT(ss, optimization_level) &&
                      TICK_CMP_REPORT(ss, weights_computed) &&
                      TICK_CMP_REPORT(ss, n_nodes) &&
-                     this->n_jumps_per_node == that.n_jumps_per_node;
-                     //TICK_CMP_REPORT(ss, n_jumps_per_node);
+                     //this->n_jumps_per_node == that.n_jumps_per_node;
+                     TICK_CMP_REPORT_PTR(ss, n_jumps_per_node);
     return BoolStrReport(are_equal, ss.str());
   }
   BoolStrReport compare(const ModelHawkes &that) {

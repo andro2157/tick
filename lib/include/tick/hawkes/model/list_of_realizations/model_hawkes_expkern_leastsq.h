@@ -20,7 +20,7 @@ class DLL_PUBLIC ModelHawkesExpKernLeastSq : public ModelHawkesLeastSq {
 
   //! @brief The 2d array of decays (remember that the decays are fixed!)
   SArrayDouble2dPtr decays;
-
+  
  public:
   //! @brief Empty constructor
   //! This constructor should only be used for serialization
@@ -102,7 +102,7 @@ class DLL_PUBLIC ModelHawkesExpKernLeastSq : public ModelHawkesLeastSq {
                      TICK_CMP_REPORT(ss, Dg) &&
                      TICK_CMP_REPORT(ss, Dg2) &&
                      TICK_CMP_REPORT(ss, C) &&
-                     TICK_CMP_REPORT(ss, decays);
+                     TICK_CMP_REPORT_PTR(ss, decays);
     return BoolStrReport(are_equal, ss.str());
   }
   BoolStrReport compare(const ModelHawkesExpKernLeastSq &that) {

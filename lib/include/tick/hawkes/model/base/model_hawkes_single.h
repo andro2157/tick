@@ -53,12 +53,9 @@ class DLL_PUBLIC ModelHawkesSingle : public ModelHawkes {
   BoolStrReport compare(const ModelHawkesSingle &that, std::stringstream &ss) {
     ss << get_class_name() << std::endl;
     auto are_equal = ModelHawkes::compare(that, ss) &&
-                     TICK_CMP_REPORT(ss, max_n_threads) &&
-                     TICK_CMP_REPORT(ss, optimization_level) &&
-                     TICK_CMP_REPORT(ss, weights_computed) &&
-                     TICK_CMP_REPORT(ss, n_nodes) &&
-                     //this->n_jumps_per_node == that.n_jumps_per_node;
-                     TICK_CMP_REPORT(ss, n_jumps_per_node);
+                     TICK_CMP_REPORT_VECTOR_SPTR_1D(ss, timestamps, double) &&
+                     TICK_CMP_REPORT(ss, end_time) &&
+                     TICK_CMP_REPORT(ss, n_total_jumps);
     return BoolStrReport(are_equal, ss.str());
   }
   BoolStrReport compare(const ModelHawkesSingle &that) {
