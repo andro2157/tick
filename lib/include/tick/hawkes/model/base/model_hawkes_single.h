@@ -57,6 +57,7 @@ class DLL_PUBLIC ModelHawkesSingle : public ModelHawkes {
                      TICK_CMP_REPORT(ss, optimization_level) &&
                      TICK_CMP_REPORT(ss, weights_computed) &&
                      TICK_CMP_REPORT(ss, n_nodes) &&
+                     //this->n_jumps_per_node == that.n_jumps_per_node;
                      TICK_CMP_REPORT(ss, n_jumps_per_node);
     return BoolStrReport(are_equal, ss.str());
   }

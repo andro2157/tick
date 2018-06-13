@@ -173,6 +173,12 @@ TEST_F(HawkesModelTest, hawkes_least_squares_serialization) {
 
     EXPECT_DOUBLE_EQ(restored_model.loss(coeffs), model.loss(coeffs));
 
+    auto report = (model == restored_model);
+    if(!report) 
+      {
+        std::cerr << report.why();
+        std::cerr << model.get_n_total_jumps() << " != " << restored_model.get_n_total_jumps() << std::endl;
+      }
     ASSERT_TRUE(model == restored_model);
   }
 }
@@ -245,6 +251,13 @@ TEST_F(HawkesModelTest, hawkes_least_squares_sum_exp_serialization) {
 
     EXPECT_DOUBLE_EQ(restored_model.loss(coeffs), model.loss(coeffs));
 
+    
+    auto report = (model == restored_model);
+    if(!report) 
+      {
+        std::cerr << report.why();
+        std::cerr << model.get_n_total_jumps() << " != " << restored_model.get_n_total_jumps() << std::endl;
+      }
     ASSERT_TRUE(model == restored_model);
   }
 }
@@ -314,6 +327,12 @@ TEST_F(HawkesModelTest, least_square_list_serialization) {
 
     EXPECT_DOUBLE_EQ(restored_model.loss(coeffs), model.loss(coeffs));
 
+    auto report = (model == restored_model);
+    if(!report) 
+      {
+        std::cerr << report.why();
+        std::cerr << model.get_n_total_jumps() << " != " << restored_model.get_n_total_jumps() << std::endl;
+      }
     ASSERT_TRUE(model == restored_model);
   }
 }
@@ -387,6 +406,12 @@ TEST_F(HawkesModelTest, hawkes_least_squares_sum_exp_list_serialization) {
 
     EXPECT_DOUBLE_EQ(restored_model.loss(coeffs), model.loss(coeffs));
 
+    auto report = (model == restored_model);
+    if(!report) 
+      {
+        std::cerr << report.why();
+        std::cerr << model.get_n_total_jumps() << " != " << restored_model.get_n_total_jumps() << std::endl;
+      }
     ASSERT_TRUE(model == restored_model);
   }
 }
