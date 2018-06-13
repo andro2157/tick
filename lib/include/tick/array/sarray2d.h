@@ -16,6 +16,23 @@
 #include <memory>
 #include "array2d.h"
 
+template <typename T>
+class SArray2d;
+
+template <typename T>
+class SArray2DVec_ptr_comparitor{
+  static bool FUNCTION(
+    const std::vector<std::shared_ptr<T>>& left,
+    const std::vector<std::shared_ptr<T>>& right) {
+    return std::equal(left.begin(), left.end(), right.begin(),
+      [](
+          const std::shared_ptr<T>& left,
+          const std::shared_ptr<T>& right) {
+          return (*left == *right);
+      });
+  };
+};
+
 ///////////////////////////////////////////////////////////////////////////////////
 //
 //  SArray2d
@@ -43,6 +60,7 @@ class SArray2d : public Array2d<T> {
   using Array2d<T>::_data;
   using BaseArray2d<T>::_n_cols;
   using BaseArray2d<T>::_n_rows;
+  using COMPARITOR = SArray2DVec_ptr_comparitor<SArray2d<T>>;
 
 #ifdef PYTHON_LINK
   //! @brief The (eventual) Python owner of the array _data;
@@ -337,11 +355,18 @@ std::shared_ptr<SArray2d<T>> Array2d<T>::as_sarray2d_ptr() {
  * @}
  */
 
+#define VEC_PTR_CMP(TYPE)                          \
+template class SArray2DVec_ptr_comparitor<SArray2d<TYPE>>
+#if defined(__APPLE__) || defined(_WIN32)
+VEC_PTR_CMP(unsigned long);
+#endif
+
 #define SARRAY2D_DEFINE_TYPE(TYPE, NAME)\
   typedef SArray2d<TYPE> SArray##NAME##2d; \
   typedef std::shared_ptr<SArray##NAME##2d> SArray##NAME##2dPtr; \
   typedef std::vector<SArray##NAME##2dPtr> SArray##NAME##2dPtrList1D; \
-  typedef std::vector<SArray##NAME##2dPtrList1D> SArray##NAME##2dPtrList2D
+  typedef std::vector<SArray##NAME##2dPtrList1D> SArray##NAME##2dPtrList2D; \
+  VEC_PTR_CMP(TYPE);
 
 SARRAY2D_DEFINE_TYPE(double, Double);
 SARRAY2D_DEFINE_TYPE(float, Float);
@@ -355,6 +380,7 @@ SARRAY2D_DEFINE_TYPE(std::atomic<double>, AtomicDouble);
 SARRAY2D_DEFINE_TYPE(std::atomic<float>, AtomicFloat);
 
 #undef SARRAY2D_DEFINE_TYPE
+#undef VEC_PTR_CMP
 
 #define INSTANTIATE_SARRAY2D(SARRAY_TYPE, C_TYPE)              \
   template std::ostream &operator<<<C_TYPE>(std::ostream &Str, \
