@@ -23,6 +23,23 @@
 #include "tick/hawkes/model/list_of_realizations/model_hawkes_sumexpkern_leastsq.h"
 #include "tick/hawkes/model/list_of_realizations/model_hawkes_sumexpkern_loglik.h"
 
+#if defined(_MKN_WITH_MKN_KUL_)
+#include "kul/log.hpp"
+#else
+class SS_ERROR{
+ protected:
+  std::stringstream ss;
+ public:
+  ~SS_ERROR(){ std::cerr << ss.str() << std::endl;}
+  template <class T>
+  SS_ERROR& operator<<(const T& s) {
+    ss << s;
+    return *this;
+  }
+};
+#define KLOG(v) SS_ERROR() << __FILE__ << " : " << __LINE__ << " "
+#endif
+
 class HawkesModelTest : public ::testing::Test {
  protected:
   SArrayDoublePtrList1D timestamps;
@@ -174,10 +191,11 @@ TEST_F(HawkesModelTest, hawkes_least_squares_serialization) {
     EXPECT_DOUBLE_EQ(restored_model.loss(coeffs), model.loss(coeffs));
 
     auto report = (model == restored_model);
-    if(!report) 
+    if(!report)
       {
-        std::cerr << report.why();
-        std::cerr << model.get_n_total_jumps() << " != " << restored_model.get_n_total_jumps() << std::endl;
+        KLOG(ERR) << report.why();
+        KLOG(ERR) << model.get_n_total_jumps() << " != " << restored_model.get_n_total_jumps();
+        KLOG(ERR) << (model.get_n_total_jumps() == restored_model.get_n_total_jumps());
       }
     ASSERT_TRUE(model == restored_model);
   }
@@ -251,12 +269,12 @@ TEST_F(HawkesModelTest, hawkes_least_squares_sum_exp_serialization) {
 
     EXPECT_DOUBLE_EQ(restored_model.loss(coeffs), model.loss(coeffs));
 
-    
+
     auto report = (model == restored_model);
-    if(!report) 
+    if(!report)
       {
-        std::cerr << report.why();
-        std::cerr << model.get_n_total_jumps() << " != " << restored_model.get_n_total_jumps() << std::endl;
+        KLOG(ERR) << report.why();
+        KLOG(ERR) << model.get_n_total_jumps() << " != " << restored_model.get_n_total_jumps();
       }
     ASSERT_TRUE(model == restored_model);
   }
@@ -328,10 +346,10 @@ TEST_F(HawkesModelTest, least_square_list_serialization) {
     EXPECT_DOUBLE_EQ(restored_model.loss(coeffs), model.loss(coeffs));
 
     auto report = (model == restored_model);
-    if(!report) 
+    if(!report)
       {
-        std::cerr << report.why();
-        std::cerr << model.get_n_total_jumps() << " != " << restored_model.get_n_total_jumps() << std::endl;
+        KLOG(ERR) << report.why();
+        KLOG(ERR) << model.get_n_total_jumps() << " != " << restored_model.get_n_total_jumps();
       }
     ASSERT_TRUE(model == restored_model);
   }
@@ -407,10 +425,10 @@ TEST_F(HawkesModelTest, hawkes_least_squares_sum_exp_list_serialization) {
     EXPECT_DOUBLE_EQ(restored_model.loss(coeffs), model.loss(coeffs));
 
     auto report = (model == restored_model);
-    if(!report) 
+    if(!report)
       {
-        std::cerr << report.why();
-        std::cerr << model.get_n_total_jumps() << " != " << restored_model.get_n_total_jumps() << std::endl;
+        KLOG(ERR) << report.why();
+        KLOG(ERR) << model.get_n_total_jumps() << " != " << restored_model.get_n_total_jumps();
       }
     ASSERT_TRUE(model == restored_model);
   }
