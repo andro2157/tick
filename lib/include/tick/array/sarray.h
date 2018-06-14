@@ -13,6 +13,7 @@
 template <typename T>
 class SArray;
 
+
 template <typename T>
 class SArrayVec_ptr_comparator{
  public:

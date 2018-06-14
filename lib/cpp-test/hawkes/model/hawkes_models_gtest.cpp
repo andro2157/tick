@@ -38,6 +38,7 @@ class HawkesModelTest : public ::testing::Test {
   }
 };
 
+
 TEST_F(HawkesModelTest, hawkes_sum_exp_loglik_serialization) {
   ArrayDouble decays{2., 3.};
 
