@@ -158,6 +158,8 @@ class DLL_PUBLIC ModelHawkesSumExpKernLeastSqSingle : public ModelHawkesSingle {
   }
 };
 
+CEREAL_SPECIALIZE_FOR_ALL_ARCHIVES(ModelHawkesSumExpKernLeastSqSingle,
+                                   cereal::specialization::member_serialize)
 CEREAL_REGISTER_TYPE(ModelHawkesSumExpKernLeastSqSingle);
 
 #endif  // LIB_INCLUDE_TICK_HAWKES_MODEL_MODEL_HAWKES_SUMEXPKERN_LEASTSQ_SINGLE_H_

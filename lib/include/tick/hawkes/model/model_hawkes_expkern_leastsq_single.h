@@ -147,6 +147,8 @@ class DLL_PUBLIC ModelHawkesExpKernLeastSqSingle : public ModelHawkesSingle {
   }
 };
 
+CEREAL_SPECIALIZE_FOR_ALL_ARCHIVES(ModelHawkesExpKernLeastSqSingle,
+                                   cereal::specialization::member_serialize)
 CEREAL_REGISTER_TYPE(ModelHawkesExpKernLeastSqSingle);
 
 #endif  // LIB_INCLUDE_TICK_HAWKES_MODEL_MODEL_HAWKES_EXPKERN_LEASTSQ_SINGLE_H_
