@@ -40,7 +40,7 @@ class HawkesModelTest : public ::testing::Test {
 };
 
 TEST_F(HawkesModelTest, hawkes_loglik_serialization) {
-  ModelHawkesLogLik model();
+  ModelHawkesLogLik model;
 
   auto timestamps_list = SArrayDoublePtrList2D(0);
   timestamps_list.push_back(timestamps);
@@ -51,9 +51,6 @@ TEST_F(HawkesModelTest, hawkes_loglik_serialization) {
   (*end_times)[1] = 5.87;
 
   model.set_data(timestamps_list, end_times);
-  model.compute_weights();
-
-  ArrayDouble coeffs = ArrayDouble{1., 3., 2., 3., 4., 1};
 
   std::stringstream os;
   {
@@ -72,42 +69,34 @@ TEST_F(HawkesModelTest, hawkes_loglik_serialization) {
     EXPECT_EQ((*restored_model.get_end_times())[1], 5.87);
     EXPECT_EQ(restored_model.get_n_total_jumps(), model.get_n_total_jumps());
 
-    EXPECT_DOUBLE_EQ(restored_model.loss(coeffs), model.loss(coeffs));
-
     ASSERT_TRUE(model == restored_model);
   }
 }
 
-// TEST_F(HawkesModelTest, hawkes_loglik_single_serialization) {
-//   ModelHawkesLogLikSingle model();
-//   model.set_data(timestamps, 5.65);
-//   model.compute_weights();
+TEST_F(HawkesModelTest, hawkes_loglik_single_serialization) {
+  ModelHawkesLogLikSingle model;
+  model.set_data(timestamps, 5.65);
 
-//   ArrayDouble coeffs =
-//       ArrayDouble{1., 3., 0., 1., 1., 3., 2., 3., 4., 1., 5., 3., 2., 4.};
+  std::stringstream os;
+  {
+    cereal::JSONOutputArchive outputArchive(os);
 
-//   std::stringstream os;
-//   {
-//     cereal::JSONOutputArchive outputArchive(os);
+    outputArchive(model);
+  }
 
-//     outputArchive(model);
-//   }
+  {
+    cereal::JSONInputArchive inputArchive(os);
 
-//   {
-//     cereal::JSONInputArchive inputArchive(os);
+    ModelHawkesLogLikSingle restored_model;
+    inputArchive(restored_model);
 
-//     ModelHawkesLogLikSingle restored_model;
-//     inputArchive(restored_model);
+    EXPECT_EQ(restored_model.get_n_nodes(), 2);
+    EXPECT_EQ(restored_model.get_end_time(), 5.65);
+    EXPECT_EQ(restored_model.get_n_total_jumps(), model.get_n_total_jumps());
 
-//     EXPECT_EQ(restored_model.get_n_nodes(), 2);
-//     EXPECT_EQ(restored_model.get_end_time(), 5.65);
-//     EXPECT_EQ(restored_model.get_n_total_jumps(), model.get_n_total_jumps());
-
-//     EXPECT_DOUBLE_EQ(restored_model.loss(coeffs), model.loss(coeffs));
-
-//     ASSERT_TRUE(model == restored_model);
-//   }
-// }
+    ASSERT_TRUE(model == restored_model);
+  }
+}
 
 TEST_F(HawkesModelTest, hawkes_sum_exp_loglik_serialization) {
   ArrayDouble decays{2., 3.};
