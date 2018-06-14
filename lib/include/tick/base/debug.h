@@ -91,6 +91,18 @@
     return are_equal; \
   }()
 
+#define TICK_CMP_REPORT_VECTOR_UPTR_1D(ss, var, type) \
+  [&]() { \
+    auto comp = [](const std::unique_ptr<type>& left, const std::unique_ptr<type>& right) { \
+      return (*left == *right); \
+    }; \
+    bool is_size_eq = this->var.size() == that.var.size(); \
+    bool are_equal = (is_size_eq && \
+                    std::equal(this->var.begin(), this->var.end(), that.var.begin(), comp)); \
+    if (!are_equal) \
+      ss << #var ": " << this->var << " != " << that.var << std::endl; \
+    return are_equal; \
+  }()
 /** TICK_CMP_REPORT_PTR
  * This is the same as the above macro expect it includes a dereference for
  *  pointers or std::shared_ptr etc - null checks are included
