@@ -19,7 +19,8 @@ class SArrayVec_ptr_comparator{
   static bool VFUNCTION(
     const std::vector<std::shared_ptr<T>>& left,
     const std::vector<std::shared_ptr<T>>& right) {
-    return std::equal(left.begin(), left.end(), right.begin(), FUNCTION);
+    return (left.size() == right.size() &&
+            std::equal(left.begin(), left.end(), right.begin(), FUNCTION));
   };
   static bool FUNCTION(
     const std::shared_ptr<T>& left,

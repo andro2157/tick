@@ -18,12 +18,16 @@ class DLL_PUBLIC ModelHawkesSumExpKernLogLik : public ModelHawkesLogLik {
   ArrayDouble decays;
 
  public:
+  // This exists soley for cereal/swig
+  ModelHawkesSumExpKernLogLik() : ModelHawkesSumExpKernLogLik(ArrayDouble(), 0) {}
+
   /**
    * @brief Constructor
    * \param decay : decay for this model (remember that decay is fixed!)
    * \param max_n_threads : number of cores to be used for multithreading. If
    * negative, the number of physical cores will be used
    */
+
   ModelHawkesSumExpKernLogLik(const ArrayDouble &decay,
                               const int max_n_threads = 1);
 
@@ -78,5 +82,7 @@ class DLL_PUBLIC ModelHawkesSumExpKernLogLik : public ModelHawkesLogLik {
 
 CEREAL_SPECIALIZE_FOR_ALL_ARCHIVES(ModelHawkesSumExpKernLogLik,
                                    cereal::specialization::member_serialize)
+
+CEREAL_REGISTER_TYPE(ModelHawkesSumExpKernLogLik)
 
 #endif  // LIB_INCLUDE_TICK_HAWKES_MODEL_LIST_OF_REALIZATIONS_MODEL_HAWKES_SUMEXPKERN_LOGLIK_H_
