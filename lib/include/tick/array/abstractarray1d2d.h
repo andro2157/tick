@@ -548,12 +548,9 @@ AbstractArray1d2d<T>::get_data_index(size_t index) const {
   return _data[index];
 }
 
-<<<<<<< HEAD
-=======
 template <typename T>
 inline std::ostream &operator<<(std::ostream &s, const AbstractArray1d2d<T> &p) {
   return s << typeid(p).name() << "<" << typeid(T).name() << ">";
 }
 
->>>>>>> Added serialize function to Model hawkes
 #endif  // LIB_INCLUDE_TICK_ARRAY_ABSTRACTARRAY1D2D_H_
