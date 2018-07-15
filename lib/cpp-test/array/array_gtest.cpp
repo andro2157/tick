@@ -9,6 +9,8 @@
 
 #include <gtest/gtest.h>
 
+#include "half/umHalf.h"
+
 #define DEBUG_COSTLY_THROW 1
 
 /*
@@ -26,6 +28,7 @@
 #define TICK_TEST_DATA_MIN_VALUE -10000
 #define TICK_TEST_DATA_MAX_VALUE 10000
 
+#define TICK_TEST_HALF_RELATIVE_ERROR 1e-3//TODO find the real one
 #define TICK_TEST_SINGLE_RELATIVE_ERROR 1e-4
 #define TICK_TEST_DOUBLE_RELATIVE_ERROR 1e-13
 
@@ -33,6 +36,14 @@
 #include "tick/array/dot.h"
 #include "tick/base/base.h"
 #include "tick/base/serialization.h"
+
+#define NonAtomicOuterType(TYPE) \
+  template <>                    \
+  struct InnerType<TYPE> {       \
+    using type = TYPE;           \
+  };
+
+NonAtomicOuterType(half);
 
 namespace {
 
@@ -62,6 +73,12 @@ constexpr double GetAcceptedRelativeError(
 
 template <typename T>
 constexpr double GetAcceptedRelativeError(
+    typename std::enable_if<std::is_same<T, half>::value>::type * = 0) {
+  return TICK_TEST_HALF_RELATIVE_ERROR;
+}
+
+template <typename T>
+constexpr double GetAcceptedRelativeError(
     typename std::enable_if<std::is_same<T, float>::value>::type * = 0) {
   return TICK_TEST_SINGLE_RELATIVE_ERROR;
 }
@@ -72,8 +89,25 @@ constexpr double GetAcceptedRelativeError(
   return TICK_TEST_DOUBLE_RELATIVE_ERROR;
 }
 
+
 std::random_device rd;
 std::mt19937 gen(rd());
+
+template <typename ArrType>
+ArrType GenerateRandomArray(
+    ulong n = TICK_TEST_DATA_SIZE,
+    typename std::enable_if<
+        std::is_same<typename ArrType::value_type, half>::value>::type * =
+        0) {
+  ArrType res(n);
+
+  std::uniform_real_distribution<> dis(TICK_TEST_DATA_MIN_VALUE,
+                                       TICK_TEST_DATA_MAX_VALUE);
+
+  for (ulong i = 0; i < res.size(); ++i) res[i] = dis(gen);
+
+  return res;
+}
 
 template <typename ArrType>
 ArrType GenerateRandomArray(
@@ -119,7 +153,6 @@ Arr2dType GenerateRandomArray2d(ulong n_rows = TICK_TEST_ROW_SIZE,
 
   std::copy(random_array.data(), random_array.data() + random_array.size(),
             random_2d_array.data());
-
   return random_2d_array;
 }
 
@@ -129,20 +162,20 @@ Arr2dType GenerateRandomArray2d(ulong n_rows = TICK_TEST_ROW_SIZE,
   {                                                                         \
     const double relE =                                                     \
         std::fabs((expected - actual) /                                     \
-                  static_cast<double>(                                      \
-                      expected == 0 ? std::numeric_limits<float>::epsilon() \
+                  static_cast<type>(                                        \
+                      expected == 0 ? std::numeric_limits<type>::epsilon()  \
                                     : expected));                           \
     EXPECT_LE(relE, ::GetAcceptedRelativeError<type>());                    \
   }
 #define ASSERT_RELATIVE_ERROR(type, actual, expected)                       \
   {                                                                         \
-    const double relE =                                                     \
-        std::fabs((expected - actual) /                                     \
-                  static_cast<double>(                                      \
-                      expected == 0 ? std::numeric_limits<float>::epsilon() \
+    double relE = std::fabs((expected - actual) /                           \
+                  static_cast<type>(                                        \
+                      expected == 0 ? std::numeric_limits<type>::epsilon()  \
                                     : expected));                           \
     ASSERT_LE(relE, ::GetAcceptedRelativeError<type>());                    \
   }
+
 
 TEST(ArrayTestSetup, RelativeErrors) {
   ASSERT_EQ(GetAcceptedRelativeError<int>(), 0);
@@ -159,7 +192,7 @@ class ArrayTest : public ::testing::Test {
 };
 
 typedef ::testing::Types<ArrayFloat, ArrayDouble, ArrayShort, ArrayUShort,
-                         ArrayInt, ArrayUInt, ArrayLong, ArrayULong>
+                         ArrayInt, ArrayUInt, ArrayLong, ArrayULong, ArrayHalf>
     MyArrayTypes;
 TYPED_TEST_CASE(ArrayTest, MyArrayTypes);
 
@@ -171,12 +204,13 @@ class Array2dTest : public ::testing::Test {
 
 typedef ::testing::Types<ArrayFloat2d, ArrayDouble2d, ArrayShort2d,
                          ArrayUShort2d, ArrayInt2d, ArrayUInt2d, ArrayLong2d,
-                         ArrayULong2d>
+                         ArrayULong2d, ArrayHalf2d>
     MyArray2dTypes;
 TYPED_TEST_CASE(Array2dTest, MyArray2dTypes);
 
 TYPED_TEST(ArrayTest, InitToZero) {
-  TypeParam arr{TICK_TEST_DATA_SIZE};
+  using VT = typename TypeParam::value_type;
+  TypeParam arr{VT(TICK_TEST_DATA_SIZE)};
 
   arr.init_to_zero();
 
@@ -276,7 +310,8 @@ TYPED_TEST(ArrayTest, InitList) {
 }
 
 TYPED_TEST(ArrayTest, Fill) {
-  TypeParam arr{TICK_TEST_DATA_SIZE};
+  using VT = typename TypeParam::value_type;
+  TypeParam arr{VT(TICK_TEST_DATA_SIZE)};
 
   arr.fill(1337.0);
 
@@ -285,9 +320,10 @@ TYPED_TEST(ArrayTest, Fill) {
 }
 
 TYPED_TEST(ArrayTest, Fill_Int_to_double_no_cast) {
+  using VT = typename TypeParam::value_type;
   TypeParam arr(TICK_TEST_DATA_SIZE);
   uint32_t leet = 1337;
-  arr.fill(leet);
+  arr.fill(VT(leet));
 
   for (ulong j = 0; j < arr.size(); ++j)
     ASSERT_DOUBLE_EQ(arr.data()[j], leet);
@@ -341,7 +377,10 @@ TYPED_TEST(ArrayTest, DivOperator) {
 
     SCOPED_TRACE(factor);
     for (ulong j = 0; j < arrA.size(); ++j)
-      ASSERT_RELATIVE_ERROR(VT, arrA[j], static_cast<VT>(oldA[j] / factor));
+    {
+      ASSERT_RELATIVE_ERROR(VT, arrA[j], oldA[j] / factor);
+
+    }
   }
 }
 
@@ -351,7 +390,7 @@ TYPED_TEST(ArrayTest, NormSq) {
 
   auto norm_sq = arrA.norm_sq();
 
-  decltype(norm_sq) result{0};
+  decltype(norm_sq) result{VT(0.0)};
   for (ulong j = 0; j < arrA.size(); ++j) result += arrA[j] * arrA[j];
 
   EXPECT_RELATIVE_ERROR(decltype(norm_sq), arrA.norm_sq(), result);
@@ -362,7 +401,7 @@ TYPED_TEST(ArrayTest, DotProduct) {
   TypeParam arrA = ::GenerateRandomArray<TypeParam>();
   TypeParam arrB = ::GenerateRandomArray<TypeParam>();
 
-  typename TypeParam::value_type res{0};
+  typename TypeParam::value_type res{VT(0.0)};
   for (ulong j = 0; j < arrA.size(); ++j) res += arrA[j] * arrB[j];
 
   EXPECT_RELATIVE_ERROR(VT, res, arrA.dot(arrB));
@@ -392,8 +431,11 @@ TYPED_TEST(ArrayTest, MultIncr) {
 
     SCOPED_TRACE(factor);
     for (ulong j = 0; j < arrA.size(); ++j)
+    {
       ASSERT_RELATIVE_ERROR(VT, arrA[j],
                             static_cast<VT>(oldA[j] + arrB[j] * factor));
+    }
+    
   }
 }
 
@@ -421,7 +463,7 @@ TYPED_TEST(ArrayTest, MultAddMultIncr) {
     TypeParam arrB = ::GenerateRandomArray<TypeParam>();
     TypeParam arrC = ::GenerateRandomArray<TypeParam>();
 
-    VT factor_2 = factor + 3.0;
+    VT factor_2 = factor + VT(3.0);
     arrA.mult_add_mult_incr(arrB, factor, arrC, factor_2);
 
     for (ulong j = 0; j < arrA.size(); ++j) oldA[j] += arrB[j] * factor;
@@ -441,7 +483,8 @@ TYPED_TEST(Array2dTest, MultAddMultIncr) {
     TypeParam arrB = ::GenerateRandomArray2d<TypeParam>();
     TypeParam arrC = ::GenerateRandomArray2d<TypeParam>();
 
-    VT factor_2 = factor + 3.0;
+    VT factor_2 = factor + VT(3.0);
+
     arrA.mult_add_mult_incr(arrB, factor, arrC, factor_2);
 
     for (ulong j = 0; j < arrA.size(); ++j) oldA[j] += arrB[j] * factor;

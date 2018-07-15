@@ -7,6 +7,7 @@
 
 #include "alloc.h"
 #include "tick/base/defs.h"
+#include "../../../cpp-test/array/half/umHalf.h"
 
 #include <cmath>
 #include <memory>
@@ -561,6 +562,7 @@ ARRAY_DEFINE_TYPE(int64_t, Long);
 ARRAY_DEFINE_TYPE(ulong, ULong);
 ARRAY_DEFINE_TYPE(std::atomic<double>, AtomicDouble);
 ARRAY_DEFINE_TYPE(std::atomic<float>, AtomicFloat);
+ARRAY_DEFINE_TYPE(HalfFloat, Half);
 
 /**
  * @}

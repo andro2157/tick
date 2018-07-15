@@ -26,7 +26,7 @@ property:
     nixish_cargs: -fwrapv -O2 -Wall
                   -fstack-protector-strong
                   -Wformat -Werror -Wdate-time
-                  -D_FORTIFY_SOURCE=2 -fPIC -std=c++11
+                  -D_FORTIFY_SOURCE=2 -fPIC 
                   -ffast-math -Wno-uninitialized
 
     nix_cargs: ${nixish_cargs}
@@ -192,7 +192,7 @@ profile:
 
 ### See file ./sh/gtest/sh
   - name: exe
-    arg: ${cargs}
+#arg: ${cargs}
     if_arg:
       win: -Ox -GL -MD -EHsc
       nix: ${nix_cargs}
@@ -220,3 +220,10 @@ profile:
   - name: gtest
     parent: gtest_nodep
     self: solver hawkes/model hawkes/simulation robust survival
+
+  - name: gtest_array
+    parent: gtest_nodep
+    self: array solver hawkes/model hawkes/simulation robust survival
+    main: cpp-test/array/array_gtest.cpp
+    inc: cpp-test/array
+

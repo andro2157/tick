@@ -414,7 +414,7 @@ typename AbstractArray1d2d<T>::K AbstractArray1d2d<T>::min() const {
   }
 
   if (is_sparse() && size_data() != _size)
-    return (min > 0 ? 0 : min);
+    return (min > 0 ? Y(0) : min);
   else
     return min;
 }
@@ -431,7 +431,7 @@ typename AbstractArray1d2d<T>::K AbstractArray1d2d<T>::max() const {
   }
 
   if (is_sparse() && size_data() != _size)
-    return (max < 0 ? 0 : max);
+    return (max < 0 ? Y(0) : max);
   else
     return max;
 }
@@ -477,6 +477,15 @@ AbstractArray1d2d<T>::operator*=(const typename AbstractArray1d2d<T>::K a) {
 }
 
 namespace tick {
+
+template <typename T>
+void fast_division(
+    AbstractArray1d2d<T> &x,
+    const typename std::enable_if<std::is_same<T, half>::value, T>::type
+        a) {
+  x *= (half(1.0) / half{a});
+}
+
 
 template <typename T>
 void fast_division(
@@ -548,12 +557,9 @@ AbstractArray1d2d<T>::get_data_index(size_t index) const {
   return _data[index];
 }
 
-<<<<<<< HEAD
-=======
 template <typename T>
 inline std::ostream &operator<<(std::ostream &s, const AbstractArray1d2d<T> &p) {
   return s << typeid(p).name() << "<" << typeid(T).name() << ">";
 }
 
->>>>>>> Added serialize function to Model hawkes
 #endif  // LIB_INCLUDE_TICK_ARRAY_ABSTRACTARRAY1D2D_H_
