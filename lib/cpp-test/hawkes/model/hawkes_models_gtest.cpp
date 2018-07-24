@@ -25,6 +25,7 @@
 
 
 
+
 class HawkesModelTest : public ::testing::Test {
  protected:
   SArrayDoublePtrList1D timestamps;

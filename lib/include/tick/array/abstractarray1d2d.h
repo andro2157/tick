@@ -11,9 +11,11 @@
 
 // License: BSD 3 clause
 
-#include <algorithm>
 #include <atomic>
 #include <cstring>
+#include <iostream>
+#include <typeinfo>
+#include <algorithm>
 #include <type_traits>
 #include <typeinfo>
 

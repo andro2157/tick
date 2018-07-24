@@ -113,7 +113,7 @@ class DLL_PUBLIC ModelHawkesLogLik : public ModelHawkesList {
   BoolStrReport compare(const ModelHawkesLogLik &that, std::stringstream &ss) {
     ss << get_class_name() << std::endl;
     auto are_equal = ModelHawkesList::compare(that, ss) &&
-                     TICK_CMP_REPORT_VECTOR_UPTR_1D(ss, model_list, ModelHawkesLogLikSingle);
+                     TICK_CMP_REPORT_VECTOR(ss, model_list);
     return BoolStrReport(are_equal, ss.str());
   }
   BoolStrReport compare(const ModelHawkesLogLik &that) {

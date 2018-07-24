@@ -397,8 +397,13 @@ CEREAL_LOAD_FUNCTION_NAME(Archive& ar, BaseArray2d<T>& arr) {
  * @{
  */
 
-#define ARRAY2D_DEFINE_TYPE(TYPE, NAME)                       \
-  typedef Array2d<TYPE> Array##NAME##2d;                      \
+template <typename T>
+inline std::ostream &operator<<(std::ostream &s, const std::vector<T> &p) {
+  return s << typeid(p).name() << "<" << typeid(T).name() << ">";
+}
+
+#define ARRAY2D_DEFINE_TYPE(TYPE, NAME)\
+  typedef Array2d<TYPE> Array##NAME##2d; \
   typedef std::vector<Array##NAME##2d> Array##NAME##2dList1D; \
   typedef std::vector<Array##NAME##2dList1D> Array##NAME##2dList2D
 

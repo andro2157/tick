@@ -110,6 +110,5 @@ class DLL_PUBLIC ModelHawkesSumExpKernLogLikSingle
 
 CEREAL_SPECIALIZE_FOR_ALL_ARCHIVES(ModelHawkesSumExpKernLogLikSingle,
                                    cereal::specialization::member_serialize)
-CEREAL_REGISTER_TYPE(ModelHawkesSumExpKernLogLikSingle)
 
 #endif  // LIB_INCLUDE_TICK_HAWKES_MODEL_MODEL_HAWKES_SUMEXPKERN_LOGLIK_SINGLE_H_

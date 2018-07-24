@@ -71,6 +71,5 @@ class DLL_PUBLIC ModelHawkesExpKernLogLik : public ModelHawkesLogLik {
 
 CEREAL_SPECIALIZE_FOR_ALL_ARCHIVES(ModelHawkesExpKernLogLik,
                                    cereal::specialization::member_serialize)
-CEREAL_REGISTER_TYPE(ModelHawkesExpKernLogLik)
 
 #endif  // LIB_INCLUDE_TICK_HAWKES_MODEL_LIST_OF_REALIZATIONS_MODEL_HAWKES_EXPKERN_LOGLIK_H_
