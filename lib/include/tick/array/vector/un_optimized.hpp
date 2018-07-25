@@ -115,7 +115,7 @@ vector_operations_unoptimized<T>::set(const ulong n, const K alpha, T *x) const 
 template <typename T>
 template <typename K>
 tick::promote_t<K> vector_operations_unoptimized<T>::sum(const ulong n, const T *x) const {
-  return std::accumulate(x, x + n, tick::promote_t<K>{0});
+  return std::accumulate(x, x + n, 0.0);
 }
 
 template <typename T>

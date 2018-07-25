@@ -1,13 +1,13 @@
 
 ///////////////////////////////////////////////////////////////////////////////////
 /*
-Copyright (c) 2006-2008, 
+Copyright (c) 2006-2008,
 Chris "Krishty" Maiwald, Alexander "Aramis" Gessler
 
 All rights reserved.
 
-Redistribution and use of this software in source and binary forms, 
-with or without modification, are permitted provided that the following 
+Redistribution and use of this software in source and binary forms,
+with or without modification, are permitted provided that the following
 conditions are met:
 
 * Redistributions of source code must retain the above
@@ -24,16 +24,16 @@ conditions are met:
   derived from this software without specific prior
   written permission of the Development Team.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
 OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
 LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 ///////////////////////////////////////////////////////////////////////////////////
@@ -58,7 +58,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ///////////////////////////////////////////////////////////////////////////////////
 /** 1. Represents a half-precision floating point value (16 bits) that behaves
  *  nearly conformant to the IEE 754 standard for floating-point computations.
- * 
+ *
  *  Not all operators have special implementations, most perform time-consuming
  *  conversions from half to float and back again.
  *  Differences to IEEE 754:
@@ -103,7 +103,7 @@ public:
 
 	/** Construction from existing values for mantissa, sign
 	 *  and exponent. No validation is performed.
-	 *  @note The exponent is unsigned and biased by #BIAS 
+	 *  @note The exponent is unsigned and biased by #BIAS
 	 */
 	inline HalfFloat(uint16_t _m,uint16_t _e,uint16_t _s);
 
@@ -209,22 +209,22 @@ public:
 	inline bool IsDenorm() const;
 
 	/** Returns the sign of the floating-point value -
-	 *  true stands for positive. 
+	 *  true stands for positive.
 	 */
 	inline bool GetSign() const;
 
-	template<class Archive> 
-    void serialize(Archive & ar) 
-    { 
-    	ar( bits ); 
+	template<class Archive>
+    void serialize(Archive & ar)
+    {
+    	ar( bits );
     }
 
 public:
 
-	union 
+	union
 	{
 		uint16_t bits;			// All bits
-		struct 
+		struct
 		{
 			uint16_t Frac : 10;	// mantissa
 			uint16_t Exp  : 5;		// exponent
@@ -260,7 +260,7 @@ public:
 };
 
 inline std::ostream &operator<<(std::ostream &s, const HalfFloat &p) {
-  return s << typeid(p).name() << ">";
+  return s << p.bits;
 }
 
 /** 2. Binary operations
@@ -287,7 +287,7 @@ inline float operator/ (float one, HalfFloat two);
  */
 ///////////////////////////////////////////////////////////////////////////////////
 namespace std {
-  HalfFloat fabs(HalfFloat x)
+  inline HalfFloat fabs(HalfFloat x)
   {
     return (x < 0.f) ? -(x) : x;
   }

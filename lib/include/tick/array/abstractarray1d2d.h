@@ -448,7 +448,7 @@ AbstractArray1d2d<T>::norm_sq() const {
 
   tick::promote_t<Y> norm_sq{0};
   for (ulong i = 0; i < size_data(); ++i) {
-    const Y x_i = get_data_index<Y>(i);
+    const tick::promote_t<Y> x_i = get_data_index<Y>(i);
     norm_sq += x_i * x_i;
   }
 

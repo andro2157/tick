@@ -7,6 +7,7 @@
 
 #include "alloc.h"
 #include "tick/base/defs.h"
+#include <typeinfo>
 #include "../../../cpp-test/array/half/umHalf.h"
 
 #include <cmath>

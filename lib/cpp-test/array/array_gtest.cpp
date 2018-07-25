@@ -28,7 +28,7 @@
 #define TICK_TEST_DATA_MIN_VALUE -10000
 #define TICK_TEST_DATA_MAX_VALUE 10000
 
-#define TICK_TEST_HALF_RELATIVE_ERROR 1e-3//TODO find the real one
+#define TICK_TEST_HALF_RELATIVE_ERROR 1e-3       //TODO find the real one
 #define TICK_TEST_SINGLE_RELATIVE_ERROR 1e-4
 #define TICK_TEST_DOUBLE_RELATIVE_ERROR 1e-13
 
@@ -72,7 +72,7 @@ constexpr double GetAcceptedRelativeError(
 }
 
 template <typename T>
-constexpr double GetAcceptedRelativeError(
+constexpr half GetAcceptedRelativeError(
     typename std::enable_if<std::is_same<T, half>::value>::type * = 0) {
   return TICK_TEST_HALF_RELATIVE_ERROR;
 }
@@ -175,6 +175,40 @@ Arr2dType GenerateRandomArray2d(ulong n_rows = TICK_TEST_ROW_SIZE,
                                     : expected));                           \
     ASSERT_LE(relE, ::GetAcceptedRelativeError<type>());                    \
   }
+
+
+template <typename T, typename K>
+void EXPECT_RELATIVE_ERROR_FUNC(T actual, K expected) {
+
+    T caster = static_cast<T>(
+                      expected == 0 ? std::numeric_limits<T>::epsilon()
+                                    : expected);
+
+    // std::cerr << "expected: " << expected << std::endl;
+    // std::cerr << "caster: " << caster << std::endl;
+    if(caster == 0 || (actual == 0) || expected == 0) return;
+    const K relE =
+        std::fabs((expected - actual) / caster);
+    EXPECT_LE(relE, ::GetAcceptedRelativeError<T>());
+}
+
+template <typename T, typename K>
+void ASSERT_RELATIVE_ERROR_FUNC(T actual, K expected) {
+
+
+    T caster = static_cast<T>(
+                      expected == 0 ? std::numeric_limits<T>::epsilon()
+                                    : expected);
+    // auto ep = std::numeric_limits<T>::epsilon();
+    // std::cerr << "ep: " << ep << std::endl;
+    // std::cerr << "actual: " << actual << std::endl;
+    // std::cerr << "expected: " << expected << std::endl;
+    // std::cerr << "caster: " << caster << std::endl;
+    if(caster == 0 || (actual == 0) || expected == 0) return;
+    T relE = std::fabs((expected - actual) / caster);
+    // std::cerr << "relE: " << relE << std::endl;
+    ASSERT_LE(relE, ::GetAcceptedRelativeError<T>());
+};
 
 
 TEST(ArrayTestSetup, RelativeErrors) {
@@ -378,8 +412,10 @@ TYPED_TEST(ArrayTest, DivOperator) {
     SCOPED_TRACE(factor);
     for (ulong j = 0; j < arrA.size(); ++j)
     {
-      ASSERT_RELATIVE_ERROR(VT, arrA[j], oldA[j] / factor);
-
+      ASSERT_RELATIVE_ERROR_FUNC(
+        arrA[j],
+        oldA[j] / factor
+      );
     }
   }
 }
@@ -388,12 +424,12 @@ TYPED_TEST(ArrayTest, NormSq) {
   using VT = typename TypeParam::value_type;
   TypeParam arrA = ::GenerateRandomArray<TypeParam>();
 
-  auto norm_sq = arrA.norm_sq();
+  VT norm_sq = arrA.norm_sq();
 
-  decltype(norm_sq) result{VT(0.0)};
-  for (ulong j = 0; j < arrA.size(); ++j) result += arrA[j] * arrA[j];
+  VT result;
+  for (ulong j = 0; j < arrA.size(); ++j) result += (arrA[j] * arrA[j]);
 
-  EXPECT_RELATIVE_ERROR(decltype(norm_sq), arrA.norm_sq(), result);
+  EXPECT_RELATIVE_ERROR_FUNC(norm_sq, result);
 }
 
 TYPED_TEST(ArrayTest, DotProduct) {
@@ -404,7 +440,7 @@ TYPED_TEST(ArrayTest, DotProduct) {
   typename TypeParam::value_type res{VT(0.0)};
   for (ulong j = 0; j < arrA.size(); ++j) res += arrA[j] * arrB[j];
 
-  EXPECT_RELATIVE_ERROR(VT, res, arrA.dot(arrB));
+  EXPECT_RELATIVE_ERROR_FUNC(res, arrA.dot(arrB));
 }
 
 TYPED_TEST(ArrayTest, Multiply) {
@@ -432,10 +468,10 @@ TYPED_TEST(ArrayTest, MultIncr) {
     SCOPED_TRACE(factor);
     for (ulong j = 0; j < arrA.size(); ++j)
     {
-      ASSERT_RELATIVE_ERROR(VT, arrA[j],
+      ASSERT_RELATIVE_ERROR_FUNC(arrA[j],
                             static_cast<VT>(oldA[j] + arrB[j] * factor));
     }
-    
+
   }
 }
 
@@ -450,7 +486,7 @@ TYPED_TEST(Array2dTest, MultIncr) {
 
     SCOPED_TRACE(factor);
     for (ulong j = 0; j < arrA.size(); ++j)
-      ASSERT_RELATIVE_ERROR(VT, arrA[j],
+      ASSERT_RELATIVE_ERROR_FUNC(arrA[j],
                             static_cast<VT>(oldA[j] + arrB[j] * factor));
   }
 }
@@ -471,7 +507,10 @@ TYPED_TEST(ArrayTest, MultAddMultIncr) {
 
     SCOPED_TRACE(factor);
     for (ulong j = 0; j < arrA.size(); ++j)
-      ASSERT_RELATIVE_ERROR(VT, arrA[j], static_cast<VT>(oldA[j]));
+      ASSERT_RELATIVE_ERROR_FUNC(
+        arrA[j],
+        static_cast<VT>(oldA[j])
+        );
   }
 }
 
@@ -492,7 +531,7 @@ TYPED_TEST(Array2dTest, MultAddMultIncr) {
 
     SCOPED_TRACE(factor);
     for (ulong j = 0; j < arrA.size(); ++j)
-      ASSERT_RELATIVE_ERROR(VT, arrA[j], static_cast<VT>(oldA[j]));
+      ASSERT_RELATIVE_ERROR_FUNC(arrA[j], static_cast<VT>(oldA[j]));
   }
 }
 

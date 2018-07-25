@@ -21,6 +21,12 @@ struct promote<float> {
   using type = double;
 };
 
+
+template <>
+struct promote<HalfFloat> {
+  using type = double;
+};
+
 template <>
 struct promote<std::uint8_t> {
   using type = std::uint64_t;
@@ -51,5 +57,9 @@ template <typename T>
 using promote_t = typename promote<T>::type;
 
 }  // namespace tick
+
+inline void operator+=(double& d, HalfFloat f){
+  d = d + f.GetBits();
+}
 
 #endif  // LIB_INCLUDE_TICK_ARRAY_PROMOTE_H_

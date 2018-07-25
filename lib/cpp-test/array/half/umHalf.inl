@@ -5,8 +5,8 @@ Copyright (c) 2006-2008, Alexander Gessler
 
 All rights reserved.
 
-Redistribution and use of this software in source and binary forms, 
-with or without modification, are permitted provided that the following 
+Redistribution and use of this software in source and binary forms,
+with or without modification, are permitted provided that the following
 conditions are met:
 
 * Redistributions of source code must retain the above
@@ -23,16 +23,16 @@ conditions are met:
   derived from this software without specific prior
   written permission of the ASSIMP Development Team.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
 OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
 LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 ///////////////////////////////////////////////////////////////////////////////////
@@ -53,37 +53,37 @@ inline HalfFloat::HalfFloat(float other)
 
 	IEEE.Sign = f.IEEE.Sign;
 
-	if ( !f.IEEE.Exp) 
-	{ 
+	if ( !f.IEEE.Exp)
+	{
 		IEEE.Frac = 0;
 		IEEE.Exp = 0;
 	}
-	else if (f.IEEE.Exp==0xff) 
-	{ 
+	else if (f.IEEE.Exp==0xff)
+	{
 		// NaN or INF
 		IEEE.Frac = (f.IEEE.Frac!=0) ? 1 : 0;
 		IEEE.Exp = 31;
 	}
-	else 
-	{ 
+	else
+	{
 		// regular number
 		int new_exp = f.IEEE.Exp-127;
 
-		if (new_exp<-24) 
+		if (new_exp<-24)
 		{ // this maps to 0
 			IEEE.Frac = 0;
 			IEEE.Exp = 0;
 		}
 
-		else if (new_exp<-14) 
+		else if (new_exp<-14)
 		{
 			// this maps to a denorm
 			IEEE.Exp = 0;
 			unsigned int exp_val = (unsigned int) (-14 - new_exp);  // 2^-exp_val
-			switch (exp_val) 
+			switch (exp_val)
 			{
-			case 0: 
-				IEEE.Frac = 0; 
+			case 0:
+				IEEE.Frac = 0;
 				break;
 			case 1: IEEE.Frac = 512 + (f.IEEE.Frac>>14); break;
 			case 2: IEEE.Frac = 256 + (f.IEEE.Frac>>15); break;
@@ -97,12 +97,12 @@ inline HalfFloat::HalfFloat(float other)
 			case 10: IEEE.Frac = 1; break;
 			}
 		}
-		else if (new_exp>15) 
+		else if (new_exp>15)
 		{ // map this value to infinity
 			IEEE.Frac = 0;
 			IEEE.Exp = 31;
 		}
-		else 
+		else
 		{
 			IEEE.Exp = new_exp+15;
 			IEEE.Frac = (f.IEEE.Frac >> 13);
@@ -118,7 +118,7 @@ inline HalfFloat::HalfFloat(const double p_Reference)
 	this->IEEE.Sign = l_Reference.IEEE.Sign;
 
 	// Check for special values: Is the exponent zero?
-	if(0 == l_Reference.IEEE.Exp) 
+	if(0 == l_Reference.IEEE.Exp)
 	{
 		// A zero exponent indicates either a zero or a subnormal number. A subnormal float can not
 		//	be represented as a half, so either one will be saved as a zero.
@@ -152,7 +152,7 @@ inline HalfFloat::HalfFloat(const double p_Reference)
 			this->IEEE.Exp = 0;
 		}
 		// Some small values can be stored as subnormal values.
-		else if(-14 > l_AdjustedExponent) 
+		else if(-14 > l_AdjustedExponent)
 		{
 			// The exponent of subnormal values is always be zero.
 			this->IEEE.Exp = 0;
@@ -161,14 +161,14 @@ inline HalfFloat::HalfFloat(const double p_Reference)
 			this->IEEE.Frac = (1024 >> l_NewExponent) + int16_t(l_Reference.IEEE.Frac >> (42 + l_NewExponent));
 		}
 		// Very large numbers will be rounded to infinity.
-		else if(15 < l_AdjustedExponent) 
+		else if(15 < l_AdjustedExponent)
 		{
 			// Exponent all one, fraction zero.
 			this->IEEE.Exp = MAX_EXPONENT_VALUE;
 			this->IEEE.Frac = 0;
 		}
 		// All remaining numbers can be converted directly.
-		else 
+		else
 		{
 			// We reconstructed the exponent by subtracting the bias. To store it as an unsigned
 			//	int, we need to add the bias again.
@@ -178,7 +178,7 @@ inline HalfFloat::HalfFloat(const double p_Reference)
 			this->IEEE.Frac = (l_Reference.IEEE.Frac >> 42);
 		};
 	}; // else usual number
-} 
+}
 // ------------------------------------------------------------------------------------------------
 inline HalfFloat::HalfFloat(uint16_t _m,uint16_t _e,uint16_t _s)
 {
@@ -202,8 +202,8 @@ HalfFloat::operator float() const
 	IEEESingle sng;
 	sng.IEEE.Sign = IEEE.Sign;
 
-	if (!IEEE.Exp) 
-	{  
+	if (!IEEE.Exp)
+	{
 		if (!IEEE.Frac)
 		{
 			sng.IEEE.Frac=0;
@@ -211,7 +211,7 @@ HalfFloat::operator float() const
 		}
 		else
 		{
-			const float half_denorm = (1.0f/16384.0f); 
+			const float half_denorm = (1.0f/16384.0f);
 			float mantissa = ((float)(IEEE.Frac)) / 1024.0f;
 			float sgn = (IEEE.Sign)? -1.0f :1.0f;
 			sng.Float = sgn*mantissa*half_denorm;
@@ -222,7 +222,7 @@ HalfFloat::operator float() const
 		sng.IEEE.Exp = 0xff;
 		sng.IEEE.Frac = (IEEE.Frac!=0) ? 1 : 0;
 	}
-	else 
+	else
 	{
 		sng.IEEE.Exp = IEEE.Exp+112;
 		sng.IEEE.Frac = (IEEE.Frac << 13);
@@ -238,19 +238,19 @@ inline HalfFloat::operator double(void) const
 	l_Result.IEEE.Sign = this->IEEE.Sign;
 
 	// In a zero, both the exponent and the fraction are zero.
-	if((0 == this->IEEE.Exp) && (0 == this->IEEE.Frac)) 
+	if((0 == this->IEEE.Exp) && (0 == this->IEEE.Frac))
 	{
 		l_Result.IEEE.Exp = 0;
 		l_Result.IEEE.Frac = 0;
 	}
 	// If the exponent is zero and the fraction is nonzero, the number is subnormal.
-	else if((0 == this->IEEE.Exp) && (0 != this->IEEE.Frac)) 
+	else if((0 == this->IEEE.Exp) && (0 != this->IEEE.Frac))
 	{
 		// sign * 2^-14 * fraction
 		l_Result.Double = (this->IEEE.Sign ? -1.0 : +1.0) / 16384.0 * (double(this->IEEE.Frac) / 1024.0);
 	}
 	// Is the exponent all one?
-	else if(MAX_EXPONENT_VALUE == this->IEEE.Exp) 
+	else if(MAX_EXPONENT_VALUE == this->IEEE.Exp)
 	{
 		l_Result.IEEE.Exp = IEEEDouble_MaxExpontent;
 		// A zero fraction indicates an infinite value.
@@ -263,7 +263,7 @@ inline HalfFloat::operator double(void) const
 			l_Result.IEEE.Frac = uint64_t(this->IEEE.Frac) << 42;
 	}
 	// A usual value?
-	else 
+	else
 	{
 		// The exponent is stored as an unsigned int. To reconstruct its original value, we have to
 		//	subtract its bias. To re-store it in a wider bit field, we must add the bias of the new
@@ -280,8 +280,8 @@ HalfFloat::operator int() const
 	IEEESingle sng;
 	sng.IEEE.Sign = IEEE.Sign;
 
-	if (!IEEE.Exp) 
-	{  
+	if (!IEEE.Exp)
+	{
 		if (!IEEE.Frac)
 		{
 			sng.IEEE.Frac=0;
@@ -289,7 +289,7 @@ HalfFloat::operator int() const
 		}
 		else
 		{
-			const float half_denorm = (1.0f/16384.0f); 
+			const float half_denorm = (1.0f/16384.0f);
 			float mantissa = ((float)(IEEE.Frac)) / 1024.0f;
 			float sgn = (IEEE.Sign)? -1.0f :1.0f;
 			sng.Float = sgn*mantissa*half_denorm;
@@ -300,7 +300,7 @@ HalfFloat::operator int() const
 		sng.IEEE.Exp = 0xff;
 		sng.IEEE.Frac = (IEEE.Frac!=0) ? 1 : 0;
 	}
-	else 
+	else
 	{
 		sng.IEEE.Exp = IEEE.Exp+112;
 		sng.IEEE.Frac = (IEEE.Frac << 13);
@@ -352,7 +352,7 @@ inline bool HalfFloat::operator== (HalfFloat other) const
 
 	// return bits == other.bits && !this->IsNaN();
 
-	return ((bits == other.bits && !this->IsNaN()) || 
+	return ((bits == other.bits && !this->IsNaN()) ||
 			(this->IEEE.Frac == 0 && this->IEEE.Exp == 0 && other.IEEE.Frac == 0 && other.IEEE.Exp == 0));
 }
 // ------------------------------------------------------------------------------------------------
@@ -362,7 +362,7 @@ inline bool HalfFloat::operator!= (HalfFloat other) const
 	//if (!(bits << 1u) && !(other.bits << 1u))return false;
 
 	//return bits != other.bits || this->IsNaN();
-	return ((bits != other.bits || this->IsNaN()) && 
+	return ((bits != other.bits || this->IsNaN()) &&
 			!(this->IEEE.Frac == 0 && this->IEEE.Exp == 0 && other.IEEE.Frac == 0 && other.IEEE.Exp == 0));
 }
 // ------------------------------------------------------------------------------------------------
@@ -381,7 +381,7 @@ inline bool HalfFloat::operator<  (HalfFloat other) const
 	// NaN comparisons are always false
 	if (this->IsNaN() || other.IsNaN())
 		return false;
-	
+
 	// this works since the segment oder is s,e,m.
 	return (int16_t)this->bits < (int16_t)other.GetBits();
 }
@@ -391,7 +391,7 @@ inline bool HalfFloat::operator>  (HalfFloat other) const
 	// NaN comparisons are always false
 	if (this->IsNaN() || other.IsNaN())
 		return false;
-	
+
 	// this works since the segment oder is s,e,m.
 	return (int16_t)this->bits > (int16_t)other.GetBits();
 }
@@ -535,11 +535,11 @@ inline uint16_t& HalfFloat::GetBits()
 	return bits;
 }
 // ------------------------------------------------------------------------------------------------
-inline HalfFloat operator+ (HalfFloat one, HalfFloat two) 
+inline HalfFloat operator+ (HalfFloat one, HalfFloat two)
 {
 #if (!defined HALFFLOAT_NO_CUSTOM_IMPLEMENTATIONS)
 
-	if (one.IEEE.Exp == HalfFloat::MAX_EXPONENT_VALUE)	
+	if (one.IEEE.Exp == HalfFloat::MAX_EXPONENT_VALUE)
 	{
 		// if one of the components is NaN the result becomes NaN, too.
 		if (0 != one.IEEE.Frac || two.IsNaN())
@@ -548,7 +548,7 @@ inline HalfFloat operator+ (HalfFloat one, HalfFloat two)
 		// otherwise this must be infinity
 		return HalfFloat(0,HalfFloat::MAX_EXPONENT_VALUE,one.IEEE.Sign | two.IEEE.Sign);
 	}
-	else if (two.IEEE.Exp == HalfFloat::MAX_EXPONENT_VALUE)	
+	else if (two.IEEE.Exp == HalfFloat::MAX_EXPONENT_VALUE)
 	{
 		if (one.IsNaN() || 0 != two.IEEE.Frac)
 			return HalfFloat(1,HalfFloat::MAX_EXPONENT_VALUE,0);
@@ -561,20 +561,20 @@ inline HalfFloat operator+ (HalfFloat one, HalfFloat two)
 
 	// compute the difference between the two exponents. shifts with negative
 	// numbers are undefined, thus we need two code paths
-	register int expDiff = one.IEEE.Exp - two.IEEE.Exp;
-	
+	register uint expDiff = one.IEEE.Exp - two.IEEE.Exp;
+
 	if (0 == expDiff)
 	{
 		// the exponents are equal, thus we must just add the hidden bit
 		temp = two.IEEE.Exp;
 
 		if (0 == one.IEEE.Exp)m1 = one.IEEE.Frac;
-		else m1 = (int)one.IEEE.Frac | ( 1 << HalfFloat::BITS_MANTISSA ); 
+		else m1 = (int)one.IEEE.Frac | ( 1 << HalfFloat::BITS_MANTISSA );
 
 		if (0 == two.IEEE.Exp)m2 = two.IEEE.Frac;
 		else m2 = (int)two.IEEE.Frac | ( 1 << HalfFloat::BITS_MANTISSA );
 	}
-	else 
+	else
 	{
 		if (expDiff < 0)
 		{
@@ -582,7 +582,7 @@ inline HalfFloat operator+ (HalfFloat one, HalfFloat two)
 			std::swap(one,two);
 		}
 
-		m1 = (int)one.IEEE.Frac | ( 1 << HalfFloat::BITS_MANTISSA ); 
+		m1 = (int)one.IEEE.Frac | ( 1 << HalfFloat::BITS_MANTISSA );
 
 		if (0 == two.IEEE.Exp)m2 = two.IEEE.Frac;
 		else m2 = (int)two.IEEE.Frac | ( 1 << HalfFloat::BITS_MANTISSA );
@@ -592,12 +592,12 @@ inline HalfFloat operator+ (HalfFloat one, HalfFloat two)
 			m1 <<= expDiff;
 			temp = two.IEEE.Exp;
 		}
-		else 
+		else
 		{
 			if (0 != two.IEEE.Exp)
 			{
 				// arithmetic underflow
-				if (expDiff > HalfFloat::BITS_MANTISSA)return HalfFloat(0,0,0); 
+				if (expDiff > HalfFloat::BITS_MANTISSA)return HalfFloat(0,0,0);
 				else
 				{
 					m2 >>= expDiff;
@@ -606,7 +606,7 @@ inline HalfFloat operator+ (HalfFloat one, HalfFloat two)
 			temp = one.IEEE.Exp;
 		}
 	}
-	
+
 	// convert from sign-bit to two's complement representation
 	if (one.IEEE.Sign)m1 = -m1;
 	if (two.IEEE.Sign)m2 = -m2;
@@ -614,7 +614,7 @@ inline HalfFloat operator+ (HalfFloat one, HalfFloat two)
 	if (m1 < 0)
 	{
 		out.IEEE.Sign = 1;
-		m1 = -m1; 
+		m1 = -m1;
 	}
 	else out.IEEE.Sign = 0;
 
@@ -654,12 +654,12 @@ inline HalfFloat operator+ (HalfFloat one, HalfFloat two)
 #endif
 }
 // ------------------------------------------------------------------------------------------------
-inline HalfFloat operator- (HalfFloat one, HalfFloat two) 
+inline HalfFloat operator- (HalfFloat one, HalfFloat two)
 {
 	return HalfFloat(one + (-two));
 }
 // ------------------------------------------------------------------------------------------------
-inline HalfFloat operator* (HalfFloat one, HalfFloat two) 
+inline HalfFloat operator* (HalfFloat one, HalfFloat two)
 {
 	return HalfFloat((float)one * (float)two);
 }

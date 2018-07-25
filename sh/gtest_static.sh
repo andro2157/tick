@@ -66,6 +66,7 @@ for FILE in "${FILES[@]}"; do
     for P in "${PROFILES[@]}"; do
         cp bin/$P/obj/* bin/gtest_nodep/obj
     done
+    [ -d "bin/gtest_nodep/tmp" ] && cp bin/gtest_nodep/tmp/* bin/gtest_nodep/obj
 
     mkn link -p gtest_nodep  \
             -tl "${LDARGS}" \
