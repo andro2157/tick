@@ -8,7 +8,7 @@
 #include "alloc.h"
 #include "basearray2d.h"
 #include "tick/base/defs.h"
-#include "../../../cpp-test/array/half/umHalf.h"
+#include "../../../cpp-test/array/half/half.hpp"
 
 template <typename T>
 class SArray2d;
@@ -417,7 +417,7 @@ ARRAY2D_DEFINE_TYPE(int64_t, Long);
 ARRAY2D_DEFINE_TYPE(ulong, ULong);
 ARRAY2D_DEFINE_TYPE(std::atomic<double>, AtomicDouble);
 ARRAY2D_DEFINE_TYPE(std::atomic<float>, AtomicFloat);
-ARRAY2D_DEFINE_TYPE(HalfFloat, Half);
+ARRAY2D_DEFINE_TYPE(half_float::half, Half);
 
 #undef ARRAY2D_DEFINE_TYPE
 

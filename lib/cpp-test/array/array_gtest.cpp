@@ -9,7 +9,9 @@
 
 #include <gtest/gtest.h>
 
-#include "half/umHalf.h"
+#include "half/half.hpp"
+
+using namespace half_float;
 
 #define DEBUG_COSTLY_THROW 1
 
@@ -104,8 +106,8 @@ ArrType GenerateRandomArray(
   std::uniform_real_distribution<> dis(TICK_TEST_DATA_MIN_VALUE,
                                        TICK_TEST_DATA_MAX_VALUE);
 
-  for (ulong i = 0; i < res.size(); ++i) res[i] = dis(gen);
-
+  for (ulong i = 0; i < res.size(); ++i)
+      res[i] = dis(gen);
   return res;
 }
 
@@ -186,7 +188,10 @@ void EXPECT_RELATIVE_ERROR_FUNC(T actual, K expected) {
 
     // std::cerr << "expected: " << expected << std::endl;
     // std::cerr << "caster: " << caster << std::endl;
-    if(caster == 0 || (actual == 0) || expected == 0) return;
+    if(caster == 0 || (actual == 0) || expected == 0) {
+      std::cerr << "caster : "  << caster << "actual : " << actual << "expected : " << expected << std::endl;
+      return;
+    }
     const K relE =
         std::fabs((expected - actual) / caster);
     EXPECT_LE(relE, ::GetAcceptedRelativeError<T>());
@@ -204,9 +209,13 @@ void ASSERT_RELATIVE_ERROR_FUNC(T actual, K expected) {
     // std::cerr << "actual: " << actual << std::endl;
     // std::cerr << "expected: " << expected << std::endl;
     // std::cerr << "caster: " << caster << std::endl;
-    if(caster == 0 || (actual == 0) || expected == 0) return;
+    //if(caster == 0 || (actual == 0) || expected == 0) return;
+    if(caster == 0 || (actual == 0) || expected == 0) {
+      std::cerr << "caster : "  << caster << "actual : " << actual << "expected : " << expected << std::endl;
+      return;
+    }
     T relE = std::fabs((expected - actual) / caster);
-    // std::cerr << "relE: " << relE << std::endl;
+    //std::cerr << "relE: " << relE << std::endl;
     ASSERT_LE(relE, ::GetAcceptedRelativeError<T>());
 };
 
