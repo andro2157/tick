@@ -486,7 +486,7 @@ void fast_division(
     AbstractArray1d2d<T> &x,
     const typename std::enable_if<std::is_same<T, half_float::half>::value, T>::type
         a) {
-  x *= (half(1.0) / half{a});
+  x *= (half_float::half(1.0) / half_float::half{a});
 }
 
 

@@ -74,7 +74,7 @@ constexpr double GetAcceptedRelativeError(
 }
 
 template <typename T>
-constexpr half GetAcceptedRelativeError(
+constexpr float GetAcceptedRelativeError(
     typename std::enable_if<std::is_same<T, half>::value>::type * = 0) {
   return TICK_TEST_HALF_RELATIVE_ERROR;
 }
