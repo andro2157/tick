@@ -168,7 +168,7 @@ Arr2dType GenerateRandomArray2d(ulong n_rows = TICK_TEST_ROW_SIZE,
 
 #define EXPECT_RELATIVE_ERROR(type, actual, expected)                       \
   {                                                                         \
-    float div = expected;                                                   \
+    float div = static_cast<double>(expected);                              \
     if(expected == 0) div = std::numeric_limits<float>::epsilon();          \
     const double relE =                                                     \
         std::fabs((expected - actual) / div);                               \
@@ -176,7 +176,7 @@ Arr2dType GenerateRandomArray2d(ulong n_rows = TICK_TEST_ROW_SIZE,
   }
 #define ASSERT_RELATIVE_ERROR(type, actual, expected)                       \
   {                                                                         \
-    float div = expected;                                                   \
+    float div = static_cast<double>(expected);                              \
     if(expected == 0) div = std::numeric_limits<float>::epsilon();          \
     double relE = std::fabs((expected - actual) / div);                     \
     ASSERT_LE(relE, ::GetAcceptedRelativeError<type>());                    \
@@ -413,7 +413,7 @@ TYPED_TEST(ArrayTest, DotProduct) {
   typename TypeParam::value_type res{VT(0.0)};
   for (ulong j = 0; j < arrA.size(); ++j) res += arrA[j] * arrB[j];
 
-  EXPECT_RELATIVE_ERROR_FUNC(res, arrA.dot(arrB));
+  EXPECT_RELATIVE_ERROR(VT, res, arrA.dot(arrB));
 }
 
 TYPED_TEST(ArrayTest, Multiply) {
@@ -459,7 +459,7 @@ TYPED_TEST(Array2dTest, MultIncr) {
 
     SCOPED_TRACE(factor);
     for (ulong j = 0; j < arrA.size(); ++j)
-      ASSERT_RELATIVE_ERROR_FUNC(arrA[j],
+      ASSERT_RELATIVE_ERROR(VT, arrA[j],
                             static_cast<VT>(oldA[j] + arrB[j] * factor));
   }
 }
@@ -506,7 +506,7 @@ TYPED_TEST(Array2dTest, MultAddMultIncr) {
 
     SCOPED_TRACE(factor);
     for (ulong j = 0; j < arrA.size(); ++j)
-      ASSERT_RELATIVE_ERROR_FUNC(arrA[j], static_cast<VT>(oldA[j]));
+      ASSERT_RELATIVE_ERROR(VT, arrA[j], static_cast<VT>(oldA[j]));
   }
 }
 
