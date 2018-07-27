@@ -178,17 +178,18 @@ Arr2dType GenerateRandomArray2d(ulong n_rows = TICK_TEST_ROW_SIZE,
     ASSERT_LE(relE, ::GetAcceptedRelativeError<type>());                    \
   }
 
-
 template <typename T, typename K>
 void EXPECT_RELATIVE_ERROR_FUNC(T actual, K expected) {
-
+    using namespace std;
     T caster = static_cast<T>(
                       expected == 0 ? std::numeric_limits<T>::epsilon()
                                     : expected);
 
     // std::cerr << "expected: " << expected << std::endl;
     // std::cerr << "caster: " << caster << std::endl;
-    if(caster == 0 || (actual == 0) || expected == 0) {
+    if(caster == 0 || (actual == 0) || expected == 0 
+      || isnan(caster) || isnan(actual) || isnan(expected)
+      || isfinite(caster) || isfinite(actual) || isfinite(expected)) {
       std::cerr << "caster : "  << caster << "actual : " << actual << "expected : " << expected << std::endl;
       return;
     }
@@ -199,8 +200,7 @@ void EXPECT_RELATIVE_ERROR_FUNC(T actual, K expected) {
 
 template <typename T, typename K>
 void ASSERT_RELATIVE_ERROR_FUNC(T actual, K expected) {
-
-
+    using namespace std;
     T caster = static_cast<T>(
                       expected == 0 ? std::numeric_limits<T>::epsilon()
                                     : expected);
@@ -210,7 +210,9 @@ void ASSERT_RELATIVE_ERROR_FUNC(T actual, K expected) {
     // std::cerr << "expected: " << expected << std::endl;
     // std::cerr << "caster: " << caster << std::endl;
     //if(caster == 0 || (actual == 0) || expected == 0) return;
-    if(caster == 0 || (actual == 0) || expected == 0) {
+    if(caster == 0 || (actual == 0) || expected == 0 
+      || isnan(caster) || isnan(actual) || isnan(expected)
+      || isfinite(caster) || isfinite(actual) || isfinite(expected)) {
       std::cerr << "caster : "  << caster << "actual : " << actual << "expected : " << expected << std::endl;
       return;
     }
@@ -516,10 +518,13 @@ TYPED_TEST(ArrayTest, MultAddMultIncr) {
 
     SCOPED_TRACE(factor);
     for (ulong j = 0; j < arrA.size(); ++j)
+    {
+      //std::cerr << arrA[j] << "-" << oldA[j] << std::endl;
       ASSERT_RELATIVE_ERROR_FUNC(
         arrA[j],
         static_cast<VT>(oldA[j])
         );
+    }
   }
 }
 

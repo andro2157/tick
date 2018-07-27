@@ -21,6 +21,7 @@
 
 #include "promote.h"
 #include "vector_operations.h"
+#include "../../../cpp-test/array/half/half.hpp"
 
 #include <cereal/cereal.hpp>
 #include <cereal/types/base_class.hpp>
@@ -483,7 +484,7 @@ namespace tick {
 template <typename T>
 void fast_division(
     AbstractArray1d2d<T> &x,
-    const typename std::enable_if<std::is_same<T, half>::value, T>::type
+    const typename std::enable_if<std::is_same<T, half_float::half>::value, T>::type
         a) {
   x *= (half(1.0) / half{a});
 }
