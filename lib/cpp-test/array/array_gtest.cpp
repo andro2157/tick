@@ -80,6 +80,12 @@ constexpr float GetAcceptedRelativeError(
 }
 
 template <typename T>
+constexpr float GetAcceptedRelativeError(
+    typename std::enable_if<std::is_same<T, half_float::detail::expr>::value>::type * = 0) {
+  return TICK_TEST_HALF_RELATIVE_ERROR;
+}
+
+template <typename T>
 constexpr double GetAcceptedRelativeError(
     typename std::enable_if<std::is_same<T, float>::value>::type * = 0) {
   return TICK_TEST_SINGLE_RELATIVE_ERROR;
@@ -162,64 +168,19 @@ Arr2dType GenerateRandomArray2d(ulong n_rows = TICK_TEST_ROW_SIZE,
 
 #define EXPECT_RELATIVE_ERROR(type, actual, expected)                       \
   {                                                                         \
+    float div = expected;                                                   \
+    if(expected == 0) div = std::numeric_limits<float>::epsilon();          \
     const double relE =                                                     \
-        std::fabs((expected - actual) /                                     \
-                  static_cast<type>(                                        \
-                      expected == 0 ? std::numeric_limits<type>::epsilon()  \
-                                    : expected));                           \
+        std::fabs((expected - actual) / div);                               \
     EXPECT_LE(relE, ::GetAcceptedRelativeError<type>());                    \
   }
 #define ASSERT_RELATIVE_ERROR(type, actual, expected)                       \
   {                                                                         \
-    double relE = std::fabs((expected - actual) /                           \
-                  static_cast<type>(                                        \
-                      expected == 0 ? std::numeric_limits<type>::epsilon()  \
-                                    : expected));                           \
+    float div = expected;                                                   \
+    if(expected == 0) div = std::numeric_limits<float>::epsilon();          \
+    double relE = std::fabs((expected - actual) / div);                     \
     ASSERT_LE(relE, ::GetAcceptedRelativeError<type>());                    \
   }
-
-template <typename T, typename K>
-void EXPECT_RELATIVE_ERROR_FUNC(T actual, K expected) {
-    using namespace std;
-    T caster = static_cast<T>(
-                      expected == 0 ? std::numeric_limits<T>::epsilon()
-                                    : expected);
-
-    // std::cerr << "expected: " << expected << std::endl;
-    // std::cerr << "caster: " << caster << std::endl;
-    if(caster == 0 || (actual == 0) || expected == 0 
-      || isnan(caster) || isnan(actual) || isnan(expected)
-      || isfinite(caster) || isfinite(actual) || isfinite(expected)) {
-      std::cerr << "caster : "  << caster << "actual : " << actual << "expected : " << expected << std::endl;
-      return;
-    }
-    const K relE =
-        std::fabs((expected - actual) / caster);
-    EXPECT_LE(relE, ::GetAcceptedRelativeError<T>());
-}
-
-template <typename T, typename K>
-void ASSERT_RELATIVE_ERROR_FUNC(T actual, K expected) {
-    using namespace std;
-    T caster = static_cast<T>(
-                      expected == 0 ? std::numeric_limits<T>::epsilon()
-                                    : expected);
-    // auto ep = std::numeric_limits<T>::epsilon();
-    // std::cerr << "ep: " << ep << std::endl;
-    // std::cerr << "actual: " << actual << std::endl;
-    // std::cerr << "expected: " << expected << std::endl;
-    // std::cerr << "caster: " << caster << std::endl;
-    //if(caster == 0 || (actual == 0) || expected == 0) return;
-    if(caster == 0 || (actual == 0) || expected == 0 
-      || isnan(caster) || isnan(actual) || isnan(expected)
-      || isfinite(caster) || isfinite(actual) || isfinite(expected)) {
-      std::cerr << "caster : "  << caster << "actual : " << actual << "expected : " << expected << std::endl;
-      return;
-    }
-    T relE = std::fabs((expected - actual) / caster);
-    //std::cerr << "relE: " << relE << std::endl;
-    ASSERT_LE(relE, ::GetAcceptedRelativeError<T>());
-};
 
 
 TEST(ArrayTestSetup, RelativeErrors) {
@@ -423,9 +384,10 @@ TYPED_TEST(ArrayTest, DivOperator) {
     SCOPED_TRACE(factor);
     for (ulong j = 0; j < arrA.size(); ++j)
     {
-      ASSERT_RELATIVE_ERROR_FUNC(
-        arrA[j],
-        oldA[j] / factor
+      VT vt = (oldA[j] / factor);
+      ASSERT_RELATIVE_ERROR(
+        VT, arrA[j],
+        vt
       );
     }
   }
@@ -440,7 +402,7 @@ TYPED_TEST(ArrayTest, NormSq) {
   VT result;
   for (ulong j = 0; j < arrA.size(); ++j) result += (arrA[j] * arrA[j]);
 
-  EXPECT_RELATIVE_ERROR_FUNC(norm_sq, result);
+  EXPECT_RELATIVE_ERROR(VT, norm_sq, result);
 }
 
 TYPED_TEST(ArrayTest, DotProduct) {
@@ -479,7 +441,7 @@ TYPED_TEST(ArrayTest, MultIncr) {
     SCOPED_TRACE(factor);
     for (ulong j = 0; j < arrA.size(); ++j)
     {
-      ASSERT_RELATIVE_ERROR_FUNC(arrA[j],
+      ASSERT_RELATIVE_ERROR(VT, arrA[j],
                             static_cast<VT>(oldA[j] + arrB[j] * factor));
     }
 
@@ -519,9 +481,8 @@ TYPED_TEST(ArrayTest, MultAddMultIncr) {
     SCOPED_TRACE(factor);
     for (ulong j = 0; j < arrA.size(); ++j)
     {
-      //std::cerr << arrA[j] << "-" << oldA[j] << std::endl;
-      ASSERT_RELATIVE_ERROR_FUNC(
-        arrA[j],
+      ASSERT_RELATIVE_ERROR(
+        VT, arrA[j],
         static_cast<VT>(oldA[j])
         );
     }
