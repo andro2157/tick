@@ -168,17 +168,18 @@ Arr2dType GenerateRandomArray2d(ulong n_rows = TICK_TEST_ROW_SIZE,
 
 #define EXPECT_RELATIVE_ERROR(type, actual, expected)                       \
   {                                                                         \
-    float div = static_cast<double>(expected);                              \
-    if(expected == 0) div = std::numeric_limits<float>::epsilon();          \
-    const double relE =                                                     \
-        std::fabs((expected - actual) / div);                               \
+    float a = actual, e = expected;                                         \
+    float div = static_cast<double>(e);                              \
+    if(e == 0) div = std::numeric_limits<float>::epsilon();          \
+    const double relE = std::fabs((e - a) / div);                               \
     EXPECT_LE(relE, ::GetAcceptedRelativeError<type>());                    \
   }
 #define ASSERT_RELATIVE_ERROR(type, actual, expected)                       \
   {                                                                         \
-    float div = static_cast<double>(expected);                              \
-    if(expected == 0) div = std::numeric_limits<float>::epsilon();          \
-    double relE = std::fabs((expected - actual) / div);                     \
+    float a = actual, e = expected;                                         \
+    float div = static_cast<double>(e);                              \
+    if(e == 0) div = std::numeric_limits<float>::epsilon();          \
+    const double relE = std::fabs((e - a) / div);                     \
     ASSERT_LE(relE, ::GetAcceptedRelativeError<type>());                    \
   }
 
